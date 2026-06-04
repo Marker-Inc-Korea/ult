@@ -1,0 +1,93 @@
+.palette-loaded {
+  pointer-events: none;
+  position: absolute;
+  top: var(--loaded-target-gap);
+  left: var(--loaded-target-gap);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+  width: min(var(--palette-cursor-width), calc(100vw - 40px));
+  min-height: 44px;
+  padding: 6px 10px;
+}
+
+.prompt-palette.is-flipped-x .palette-loaded {
+  right: var(--loaded-target-gap);
+  left: auto;
+}
+
+.prompt-palette.is-flipped-y .palette-loaded {
+  top: auto;
+  bottom: var(--loaded-target-gap);
+}
+
+.palette-loaded-identity {
+  display: block;
+  min-width: 0;
+}
+
+.palette-loaded-label {
+  display: block;
+  flex: 0 0 auto;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--overlay-text-strong);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.76rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-loaded-status {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  overflow: hidden;
+  color: var(--overlay-text-subtle);
+}
+
+.palette-loaded-target-state {
+  flex: 0 1 auto;
+  display: inline-flex;
+  align-items: center;
+  min-width: 0;
+  height: auto;
+  padding: 0;
+  background: transparent;
+  color: var(--overlay-text-subtle);
+  font-size: 0.58rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.palette-loaded-mode {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: auto;
+  border-left: 1px solid var(--overlay-border-muted);
+  padding: 0 0 0 6px;
+  background: transparent;
+  color: var(--overlay-text-muted);
+}
+
+.palette-loaded-mode-label {
+  min-width: 0;
+  overflow: hidden;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+  font-size: 0.62rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

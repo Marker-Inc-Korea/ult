@@ -1,0 +1,100 @@
+.palette-context-picker {
+  pointer-events: auto;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr);
+  height: var(--launcher-frame-height);
+  padding: 0;
+}
+
+.palette-context-body {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.palette-context-rail {
+  display: grid;
+  gap: 2px;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--launcher-list-padding);
+}
+
+.palette-context-title {
+  display: flex;
+  align-items: center;
+  min-height: var(--launcher-input-height);
+  border-bottom: 1px solid var(--overlay-border-muted);
+  padding: 0 var(--launcher-row-padding-x);
+  color: var(--overlay-text-strong);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+
+.palette-context-title > span:first-child {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-context-entry {
+  display: grid;
+  grid-template-columns: var(--launcher-result-columns);
+  gap: 14px;
+  align-items: center;
+  min-height: var(--launcher-row-height);
+  border: 0;
+  border-radius: 6px;
+  padding: 5px 8px;
+  background: transparent;
+  color: var(--overlay-text);
+  text-align: left;
+  font: inherit;
+}
+
+.palette-context-entry:hover,
+.palette-context-entry.is-selected {
+  background: var(--overlay-selection-bg);
+}
+
+.palette-context-handle,
+.palette-context-preview {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-context-handle {
+  color: var(--overlay-text-strong);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.palette-context-preview {
+  color: var(--overlay-text-muted);
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+
+.palette-context-empty {
+  padding: 7px 9px;
+  color: var(--overlay-text-muted);
+  font-size: 0.78rem;
+}
+
+.palette-context-footer {
+  /* shared launcher footer */
+}
+
+.palette-context-hint {
+  /* shared launcher hint */
+}
+
+.palette-context-hint kbd {
+  color: var(--overlay-control-text);
+}

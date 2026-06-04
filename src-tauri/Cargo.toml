@@ -1,0 +1,37 @@
+[package]
+name = "ult"
+version = "0.1.0"
+description = "Shortcut-first menu-bar app for AI coding agent interventions"
+authors = ["Ult contributors"]
+license = "MIT"
+repository = "https://github.com/not-agent/ult"
+edition = "2021"
+
+[lib]
+name = "ult_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+core-foundation = "0.10"
+core-graphics = "0.25"
+tauri = { version = "2", features = ["macos-private-api", "image-png", "tray-icon"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+serde_yaml = "0.9"
+toml = "0.8"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls"] }
+tauri-plugin-global-shortcut = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["fmt"] }
+getrandom = "0.3"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-app-kit = { version = "0.3", default-features = false, features = ["std", "libc", "NSPasteboard", "NSPasteboardItem", "NSRunningApplication", "NSWorkspace"] }
+objc2-foundation = { version = "0.3", default-features = false, features = ["std", "NSArray", "NSData", "NSString"] }
+
+[target.'cfg(any(target_os = "macos", windows, target_os = "linux"))'.dependencies]
+tauri-plugin-autostart = "2.5.1"

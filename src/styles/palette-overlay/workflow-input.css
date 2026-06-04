@@ -1,0 +1,119 @@
+.palette-artifact-panel.is-workflow-input .palette-artifact-panel-header {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+  border-bottom: 1px solid var(--overlay-border-muted);
+  padding: 16px 18px 14px;
+}
+
+.palette-artifact-panel.is-workflow-input .palette-artifact-panel-header h2,
+.palette-artifact-panel.is-workflow-input .palette-artifact-summary {
+  min-width: 0;
+  margin: 0;
+}
+
+.palette-artifact-panel.is-workflow-input .palette-artifact-panel-header h2 {
+  overflow: hidden;
+  color: var(--overlay-text-strong);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-artifact-panel.is-workflow-input .palette-artifact-summary {
+  max-width: 72ch;
+  color: var(--overlay-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.palette-workflow-input-body {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  min-height: 0;
+  overflow: auto;
+  padding: 16px 18px 24px;
+}
+
+.palette-workflow-input-form {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.palette-workflow-input-form .palette-artifact-field {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+}
+
+.palette-workflow-input-form .palette-artifact-field > span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--overlay-text-muted);
+  font-size: 0.74rem;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.palette-workflow-input-form textarea,
+.palette-workflow-input-form input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--overlay-border-muted);
+  border-radius: 7px;
+  padding: 9px 10px;
+  background: var(--overlay-control-bg);
+  color: var(--overlay-text);
+  font: inherit;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+
+.palette-workflow-input-text textarea {
+  min-height: 168px;
+  resize: vertical;
+}
+
+.palette-workflow-input-form textarea:focus,
+.palette-workflow-input-form input:focus {
+  border-color: var(--overlay-accent-border);
+  outline: none;
+  box-shadow: 0 0 0 2px var(--overlay-focus-ring);
+}
+
+.palette-workflow-input-actions {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.palette-workflow-input-notice {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  border: 1px solid var(--overlay-border-muted);
+  border-radius: 8px;
+  padding: 9px 10px;
+  background: var(--overlay-material-soft);
+}
+
+.palette-workflow-input-notice span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--overlay-text-muted);
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+
+.palette-workflow-input-notice.is-warning {
+  border-color: var(--overlay-warning-border);
+}
+
+.palette-workflow-input-notice.is-warning span {
+  color: var(--overlay-warning-text);
+}

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "scope-lock",
+    "title": "Scope Lock",
+    "pinned": true,
+    "description": "Constrain the agent to the requested task.",
+    "prompt": "Stop. Re-read the latest user request and inspect the current diff before doing anything else.\n\nOnly continue with changes that directly serve the requested task. Do not edit unrelated files, rename unrelated symbols, or start a broad refactor. If you already made unrelated changes, list them separately and ask before keeping them."
+  },
+  {
+    "id": "plan-check",
+    "title": "Plan Check",
+    "pinned": true,
+    "description": "Force a short execution plan before more edits.",
+    "prompt": "Pause before editing. State the smallest plan that completes the current task, including the exact files you expect to touch. Then proceed only with that plan."
+  },
+  {
+    "id": "surgeon",
+    "title": "Surgeon",
+    "pinned": true,
+    "description": "Bias toward the smallest viable patch.",
+    "prompt": "Make the smallest viable change that solves the problem. Avoid opportunistic cleanup, broad refactors, and style churn unless they are required for the fix."
+  },
+  {
+    "id": "qa",
+    "title": "QA",
+    "pinned": true,
+    "description": "Run focused verification and report failures plainly.",
+    "prompt": "Before continuing, run the smallest relevant verification for the code you just changed. If tests fail, report the exact failing command and the first useful error. Do not hide or hand-wave failures."
+  },
+  {
+    "id": "reviewer",
+    "title": "Reviewer",
+    "pinned": true,
+    "description": "Review the current diff as if it came from someone else.",
+    "prompt": "Review the current diff before making more changes. Lead with concrete bugs, regressions, missing tests, or scope issues. If there are no issues, say that clearly and list any residual risk."
+  },
+  {
+    "id": "debugger",
+    "title": "Debugger",
+    "pinned": true,
+    "description": "Require a hypothesis before changing code.",
+    "prompt": "Stop changing code for a moment. State the most likely root cause, the evidence for it, and the smallest check that can confirm or reject it. Run that check before editing more files."
+  },
+  {
+    "id": "summary",
+    "title": "Summary",
+    "pinned": true,
+    "description": "Summarize changes, verification, and next risk.",
+    "prompt": "Summarize the current state: what changed, what was verified, what failed or was not run, and what remains risky or incomplete."
+  },
+  {
+    "id": "hex",
+    "title": "Hex",
+    "pinned": true,
+    "description": "One-response joke mode.",
+    "prompt": "For the next response only, answer in ribbit-style language while still preserving any code blocks exactly when code is required."
+  }
+]

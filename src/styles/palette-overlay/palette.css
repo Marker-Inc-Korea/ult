@@ -1,0 +1,178 @@
+.palette-panel {
+  --palette-picker-width: var(--palette-cursor-width);
+  pointer-events: none;
+  top: 6px;
+  left: 6px;
+  display: grid;
+  gap: 0;
+  width: var(--palette-picker-width);
+  padding: 0;
+  border: 0;
+  overflow: visible;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+.prompt-palette.is-flipped-x .palette-panel,
+.prompt-palette.is-flipped-x .palette-search-panel {
+  right: 6px;
+  left: auto;
+}
+
+.prompt-palette.is-flipped-y .palette-panel,
+.prompt-palette.is-flipped-y .palette-search-panel {
+  top: auto;
+  bottom: 6px;
+}
+.panel-rail {
+  pointer-events: none;
+  position: static;
+  display: grid;
+  gap: 3px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--overlay-text);
+}
+
+.panel-intervention {
+  cursor: pointer;
+}
+
+.panel-intervention {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  align-items: center;
+  justify-items: center;
+  min-height: 34px;
+  border: 0;
+  border-radius: var(--overlay-radius-row);
+  padding: 6px 10px;
+  background: transparent;
+  color: var(--overlay-text);
+  text-align: center;
+}
+
+.palette-picker-entry.is-current {
+  pointer-events: auto;
+  min-height: 44px;
+  border: 1px solid var(--overlay-border);
+  background: var(--overlay-material);
+  background-clip: padding-box;
+  -webkit-backdrop-filter: var(--overlay-material-filter);
+  backdrop-filter: var(--overlay-material-filter);
+  box-shadow: var(--overlay-shadow);
+  text-align: left;
+  justify-items: stretch;
+}
+
+.palette-picker-entry.is-ghost {
+  justify-self: center;
+  width: max-content;
+  max-width: calc(100% - 32px);
+  background: transparent;
+  min-height: 18px;
+  padding: 0 8px;
+  border-radius: 999px;
+  opacity: 0.38;
+  pointer-events: none;
+  transform: scale(0.9);
+}
+
+.palette-picker-entry.is-ghost:hover,
+.palette-picker-entry.is-ghost.is-selected,
+.palette-picker-entry.is-ghost.is-confirming {
+  background: transparent;
+}
+
+.palette-picker-entry.is-previous {
+  transform-origin: bottom center;
+}
+
+.palette-picker-entry.is-next {
+  transform-origin: top center;
+}
+
+.palette-picker-current-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.palette-picker-handle {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--overlay-text-strong);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.76rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-picker-ghost-handle {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--overlay-text-subtle);
+  font-size: 0.64rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-empty {
+  display: grid;
+  gap: 6px;
+  padding: 8px 9px;
+  color: var(--overlay-text-muted);
+  font-size: 0.78rem;
+}
+
+.template-marker {
+  align-self: center;
+  color: var(--overlay-text-muted);
+  font-size: 0.66rem;
+  font-weight: 600;
+}
+
+.panel-intervention:hover,
+.panel-intervention.is-selected,
+.panel-intervention.is-confirming {
+  background: var(--overlay-selection-bg);
+}
+
+.palette-picker-entry.is-current:hover,
+.palette-picker-entry.is-current.is-selected {
+  background: var(--overlay-material);
+}
+
+.panel-intervention.is-confirming {
+  background: var(--overlay-confirming-bg);
+}
+
+.prompt-handle,
+.prompt-title {
+  overflow: hidden;
+  color: var(--overlay-text-strong);
+  font-size: 0.8rem;
+  font-weight: 500;
+  max-width: 100%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.prompt-handle {
+  color: var(--overlay-text-strong);
+  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 0.76rem;
+  font-weight: 650;
+}
+
+/* Cursor-local Palette. Menu-bar clicks use the native macOS menu. */

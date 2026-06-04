@@ -1,0 +1,50 @@
+# Private notes
+docs/private/
+docs/_private/
+private/
+.private/
+.notes/
+.scratch/
+tmp/
+*.private.md
+*.local.md
+*.scratch.md
+
+# Local environment
+.env
+.env.*
+!.env.example
+.codex/config.toml
+*.p8
+*.p12
+*.cer
+*.keychain-db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.vite/
+test-results/
+playwright-report/
+
+# Tauri / Rust
+target/
+src-tauri/target/
+src-tauri/gen/
+
+# macOS
+.DS_Store
+
+# Editors
+.idea/
+.vscode/
+*.swp
+*.swo

@@ -1,0 +1,36 @@
+{
+  "name": "ult",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "bunx --bun vite --host 127.0.0.1 --port 5173 --strictPort",
+    "build": "bunx --bun tsc && bunx --bun vite build",
+    "preview": "bunx --bun vite preview",
+    "check": "bunx --bun tsc --noEmit",
+    "test:frontend": "bun test tests/frontend",
+    "test:visual": "playwright test",
+    "test:visual:update": "playwright test --update-snapshots",
+    "tauri": "bunx --bun tauri",
+    "tauri:dev": "bunx --bun tauri dev",
+    "tauri:build": "bunx --bun tauri build",
+    "release:mac": "scripts/release/package-macos.sh",
+    "release:verify:mac": "scripts/release/verify-macos.sh",
+    "release:smoke:mac": "scripts/release/smoke-macos.sh",
+    "release:manual:mac": "scripts/release/manual-qa.sh",
+    "release:alpha:preflight": "scripts/release/alpha-preflight.sh",
+    "release:alpha:check": "scripts/release/alpha-release-check.sh",
+    "release:alpha:mac": "scripts/release/alpha-gate.sh",
+    "release:alpha:report": "scripts/release/alpha-report.sh create",
+    "release:alpha:verify-manual": "scripts/release/alpha-report.sh verify"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0",
+    "@tauri-apps/cli": "^2.11.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.7"
+  }
+}

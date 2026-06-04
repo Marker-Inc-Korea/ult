@@ -1,0 +1,58 @@
+[
+  {
+    "id": "workflow-review-current-change",
+    "title": "Review Current Change",
+    "description": "Review a user-provided diff or current agent context.",
+    "keywords": ["review", "diff", "current change", "code review", "regression", "pr-review"],
+    "aliases": ["review diff", "review changes", "변경 리뷰", "코드 리뷰"],
+    "prompt": "Review the current change using only the diff, files, logs, or context available in this agent session.\nIf the relevant diff or context is missing, ask me for it before making claims.\n\nReturn findings first, ordered by severity. Focus on bugs, regressions, missing tests, privacy or safety issues, and scope drift.\nUse concrete file and line references when available. Keep any summary secondary to the findings.",
+    "input_title": "Paste diff or describe the available context.",
+    "input_placeholder": "Paste a diff, test output, or a short note such as `Diff is already attached as @repo-policy`."
+  },
+  {
+    "id": "workflow-fix-failing-tests",
+    "title": "Fix Failing Tests",
+    "description": "Drive a focused failing-test debugging loop.",
+    "keywords": ["fix", "failing", "tests", "test failure", "ci", "red tests", "debugging"],
+    "aliases": ["fix tests", "failing tests", "red tests", "테스트 실패", "테스트 수정"],
+    "prompt": "Fix the failing tests using only the failure output, commands, and project context available in this agent session.\nIf the failure output is missing, ask me for the exact command and output before editing.\n\nStart by identifying the smallest plausible cause. Patch narrowly, then run the most focused relevant verification.\nReport the command run and the remaining risk.",
+    "input_title": "Paste the failing command and output.",
+    "input_placeholder": "bun test tests/frontend/example.test.ts\n\nExpected ... received ..."
+  },
+  {
+    "id": "workflow-plan-next-step",
+    "title": "Plan Next Step",
+    "description": "Turn the current situation into a concrete next action.",
+    "keywords": ["plan", "next", "step", "todo", "prioritize", "strategy", "planning"],
+    "aliases": ["next step", "make a plan", "계획", "다음 단계"],
+    "prompt": "Plan the next step from the current request and context available in this agent session.\nIf key state is missing, ask one concise clarification instead of guessing.\n\nGive a short ordered plan with the smallest useful first action, validation needed, and any risk that could change the plan."
+  },
+  {
+    "id": "workflow-write-pr-description",
+    "title": "Write PR Description",
+    "description": "Draft a PR body from user-provided changes and checks.",
+    "keywords": ["pr", "pull request", "description", "body", "summary", "checks", "pr-review"],
+    "aliases": ["pr body", "pull request body", "PR 설명", "풀리퀘 설명"],
+    "prompt": "Write a PR description from the changes, tests, and context available in this agent session.\nIf the diff, branch context, or required template is missing, ask me for it before inventing details.\n\nInclude a concise summary, validation performed, and any known risks or follow-ups. Preserve the repository's PR template when provided.",
+    "input_title": "Paste diff, checks, or PR template notes.",
+    "input_placeholder": "Summary:\n- ...\n\nValidation:\n- make test-frontend"
+  },
+  {
+    "id": "workflow-rescue-stuck-agent",
+    "title": "Rescue Stuck Agent",
+    "description": "Reset a looping or confused coding-agent run.",
+    "keywords": ["rescue", "stuck", "loop", "debug", "reset", "blocked", "agent-control"],
+    "aliases": ["agent stuck", "unstick agent", "막힘", "에이전트 구출"],
+    "prompt": "Reset this stuck run. Use only the visible conversation, errors, commands, and context available in this agent session.\nIf the failure mode is unclear, ask for the missing output or latest instruction.\n\nSummarize what is known, identify the likely loop or bad assumption, choose one narrow recovery action, and state how to verify it.",
+    "input_title": "Describe the loop or visible failure.",
+    "input_placeholder": "The agent keeps retrying ...\nLatest visible error:\n..."
+  },
+  {
+    "id": "workflow-summarize-thread",
+    "title": "Summarize Thread",
+    "description": "Create a handoff summary from provided conversation context.",
+    "keywords": ["summarize", "summary", "thread", "handoff", "status", "progress", "release-prep"],
+    "aliases": ["thread summary", "handoff", "스레드 요약", "진행 요약"],
+    "prompt": "Summarize this thread using only the conversation and context available in this agent session.\nIf important state is missing, call that out explicitly instead of filling gaps.\n\nInclude completed work, current files or areas touched, validation already run, open risks, and the next concrete instruction."
+  }
+]

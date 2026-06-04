@@ -1,0 +1,152 @@
+import { describe, expect, test } from "bun:test";
+
+import { readOptionalText, readText } from "./support/nativeContract";
+
+describe("release contract", () => {
+  test("keeps release scripts aligned with the Launcher and explicit Copy model", () => {
+    const makefile = readText("Makefile");
+    const alphaPreflight = readText("scripts/release/alpha-preflight.sh");
+    const alphaReport = readText("scripts/release/alpha-report.sh");
+    const packageMacos = readText("scripts/release/package-macos.sh");
+    const manualQa = readText("scripts/release/manual-qa.sh");
+    const alphaGate = readText("scripts/release/alpha-gate.sh");
+    const alphaDogfooding = readOptionalText("docs/ALPHA_DOGFOODING.md");
+    const manualChecks = readOptionalText("docs/MANUAL_CHECKS.md");
+    const releaseBaseline = readOptionalText("docs/RELEASE_BASELINE.md");
+    const releaseWorkflow = readText(".github/workflows/release.yml");
+    const readme = readText("README.md");
+    const spec = readOptionalText("SPEC.md");
+    const design = readOptionalText("DESIGN.md");
+
+    expect(makefile).toContain("$(MAKE) setup-visual");
+    expect(makefile).toContain("$(MAKE) test-frontend");
+    expect(makefile).toContain("$(MAKE) test-visual");
+    expect(makefile).toContain("$(MAKE) rust-clippy");
+    expect(makefile).toContain("$(MAKE) rust-test");
+    expect(makefile).toContain("$(MAKE) tauri-build");
+    expect(makefile).not.toMatch(/APPLE_|ULT_REQUIRE_RELEASE|ULT_REQUIRE_SIGNING|notarytool/);
+
+    expect(alphaPreflight).toContain("Visual regression tests");
+    expect(alphaPreflight).toContain("bun run test:visual");
+    expect(alphaPreflight).toContain("run_step \"Tauri bundle\" bun run tauri:build");
+    expect(alphaPreflight).toContain("run_step \"Packaged app smoke\"");
+    expect(alphaPreflight).toContain("cargo clippy");
+    expect(alphaPreflight).not.toMatch(/APPLE_|ULT_REQUIRE_RELEASE|notarytool/);
+
+    expect(packageMacos).toContain("bun run check");
+    expect(packageMacos).toContain("bun run build");
+    expect(packageMacos).toContain("bun run test:frontend");
+    expect(packageMacos).toContain("bun x playwright install webkit");
+    expect(packageMacos).toContain("bun run test:visual");
+    expect(packageMacos).toContain("cargo test --manifest-path src-tauri/Cargo.toml");
+    expect(packageMacos).toContain("bunx --bun tauri build --bundles app");
+    expect(packageMacos).toContain('REQUIRE_RELEASE="${ULT_REQUIRE_RELEASE:-0}"');
+    expect(packageMacos).toContain('if [[ "$REQUIRE_RELEASE" == "1" ]]');
+
+    expect(releaseWorkflow).toContain("Validate release secrets");
+    expect(releaseWorkflow).toContain("scripts/release/package-macos.sh");
+    expect(releaseWorkflow).toContain("scripts/release/alpha-release-check.sh");
+
+    expect(readme).toContain("prompts/<handle>/PROMPT.md");
+    expect(readme).toContain("contexts/<handle>/CONTEXT.md");
+    expect(readme).toContain("skills/<handle>/SKILL.md");
+    expect(readme).toContain("persistent/skills/diagnose/SKILL.md");
+    if (releaseBaseline && spec && design) {
+      expect(releaseBaseline).toContain("make all");
+      expect(releaseBaseline).toContain("must stay free of Developer ID");
+      expect(releaseBaseline).toContain("visual regression tests");
+      expect(releaseBaseline).toContain("Rust clippy");
+      expect(releaseBaseline).toContain("Tauri app bundle build");
+      expect(releaseBaseline).toContain("Accessibility denied and granted handoff");
+      expect(releaseBaseline).toContain("~/.ult/personal-library");
+      expect(releaseBaseline).toContain("Change Boundary");
+      expect(spec).toContain("Implementations MUST NOT create or load an `ephemeral/skills`");
+      expect(design).toContain("Skills do not have an ephemeral lane");
+    }
+
+    expect(alphaReport).toContain("Explicit Copy");
+    expect(alphaReport).toContain("Launcher Search");
+    expect(alphaReport).toContain("shared top-centered Launcher shell");
+    expect(alphaReport).toContain("Artifact actions");
+    expect(alphaReport).toContain("Project writes");
+    expect(alphaReport).toContain("target directory");
+    expect(alphaReport).toContain("\\`\\$skill\\` rows open local skill packages");
+    expect(alphaReport).toContain("Change boundary");
+    expect(alphaReport).toContain("persistent/prompts/<handle>/PROMPT.md");
+    expect(alphaReport).toContain("persistent/skills");
+    expect(alphaReport).toContain("ephemeral/skills");
+    expect(alphaReport).not.toContain("human release gate for P5");
+    expect(alphaReport).not.toContain("Terminal allowlist");
+    expect(alphaReport).not.toContain("Search opens as a separate command input");
+    expect(alphaReport).not.toContain("Preferences/Library");
+    expect(alphaReport).not.toContain("skills/persistent");
+    expect(alphaReport).not.toContain("skills/ephemeral");
+
+    expect(packageMacos).toContain("## Supported Native Delivery Targets");
+    expect(packageMacos).toContain("does not switch to Copy unless Copy was the active");
+    expect(packageMacos).not.toContain("Native Delivery is allowlist-based");
+    expect(packageMacos).not.toContain("Unknown targets are copy-only");
+    expect(packageMacos).not.toContain("allowlisted terminal-like apps");
+
+    expect(manualQa).toContain("Open Launcher");
+    expect(manualQa).toContain("Open Launcher in Scratch mode");
+    expect(manualQa).toContain("It does not automate Accessibility");
+    expect(manualQa).toContain("bun run release:alpha:report");
+    expect(alphaGate).toContain("Open Launcher shortcut");
+    expect(alphaGate).toContain("Open Launcher Scratch shortcut");
+    expect(alphaGate).toContain("Palette / Launcher / Native Delivery");
+    if (alphaDogfooding && manualChecks && design) {
+      expect(alphaDogfooding).toContain("visual, and Rust tests");
+      expect(alphaDogfooding).toContain("docs/RELEASE_BASELINE.md");
+      expect(alphaDogfooding).toContain("Variable values are collected in Launcher variables mode");
+      expect(alphaDogfooding).toContain("final `Enter` loads once");
+      expect(alphaDogfooding).toContain("`#` lists persistent prompts");
+      expect(alphaDogfooding).toContain("`/` lists Launcher commands");
+      expect(alphaDogfooding).toContain("Old typed `/prompt-id` no longer loads or prepares prompts");
+      expect(alphaDogfooding).toContain("command recovery for no-match slash input");
+      expect(alphaDogfooding).toContain("artifact id, artifact kind, delivery mode");
+      expect(alphaDogfooding).toContain("| Artifact actions |");
+      expect(alphaDogfooding).toContain("| Project writes |");
+      expect(alphaDogfooding).toContain("Clicking the target app applies the loaded artifact");
+      expect(alphaDogfooding).toContain("`Enter` does not deliver from loaded state");
+      expect(alphaDogfooding).toContain("persistent/prompts/<handle>/PROMPT.md");
+      expect(alphaDogfooding).toContain("persistent/skills");
+      expect(alphaDogfooding).toContain("ephemeral/skills");
+      expect(alphaDogfooding).not.toContain("Variable values are collected near the cursor");
+      expect(alphaDogfooding).not.toContain("| Execute | `Enter` executes");
+      expect(alphaDogfooding).not.toContain("prompt handle, artifact kind");
+      expect(alphaDogfooding).not.toContain("skills/persistent");
+      expect(alphaDogfooding).not.toContain("skills/ephemeral");
+      expect(manualChecks).toContain("The cursor palette shows pinned persistent prompt rows only");
+      expect(manualChecks).toContain("Recent items appear through Launcher ranking and load through the cursor-adjacent loaded state");
+      expect(manualChecks).toContain("they do not reopen Palette or execute immediately");
+      expect(manualChecks).toContain("After the user clicks the target app");
+      expect(manualChecks).toContain("persistent/prompts/<handle>/PROMPT.md");
+      expect(manualChecks).toContain("artifact id when available");
+      expect(manualChecks).toContain("confirm it offers command recovery rather than loading or preparing a prompt");
+      expect(manualChecks).toContain("confirm the command row wins");
+      expect(manualChecks).toContain("records timestamp, artifact id, artifact kind");
+      expect(manualChecks).toContain("persistent/skills");
+      expect(manualChecks).toContain("ephemeral/skills");
+      expect(manualChecks).toContain("Visual And Browser QA Matrix");
+      expect(manualChecks).toContain("No horizontal overflow");
+      expect(manualChecks).toContain("Selected row visibility");
+      expect(manualChecks).toContain("First-viewport home usefulness");
+      expect(manualChecks).toContain("Library issue and dependency metadata");
+      expect(manualChecks).toContain("Palette cursor adjacency");
+      expect(manualChecks).toContain("Ghost row transparency");
+      expect(manualChecks).toContain("Accessibility handoff");
+      expect(manualChecks).not.toContain("execution palette");
+      expect(manualChecks).not.toContain("loaded or selected");
+      expect(manualChecks).not.toContain("prompt title above the `/handle`");
+      expect(manualChecks).not.toContain("Native delivery clicks the target terminal");
+      expect(manualChecks).not.toContain("prompt handle when available");
+      expect(manualChecks).not.toContain("records timestamp, prompt handle");
+      expect(manualChecks).not.toContain("personal-library/prompts/persistent");
+      expect(manualChecks).not.toContain("skills/persistent");
+      expect(manualChecks).not.toContain("skills/ephemeral");
+      expect(design).toContain("For Launcher or Palette UI changes, verify the visual quality gate");
+      expect(design).toContain("Implementation handoff patches should");
+    }
+  });
+});

@@ -1,0 +1,346 @@
+.palette-overlay {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  min-width: 100vw;
+  min-height: 100vh;
+  overflow: hidden;
+  background: transparent;
+  cursor: default;
+  user-select: none;
+  --overlay-material: rgba(32, 32, 34, 0.96);
+  --overlay-material-opaque: #202022;
+  --overlay-material-soft: rgba(255, 255, 255, 0.06);
+  --overlay-material-soft-opaque: #1c1c1e;
+  --overlay-material-hover: rgba(255, 255, 255, 0.095);
+  --overlay-selection-bg: var(--overlay-material-hover);
+  --overlay-confirming-bg: rgba(200, 155, 60, 0.18);
+  --overlay-border: rgba(255, 255, 255, 0.14);
+  --overlay-border-muted: rgba(255, 255, 255, 0.075);
+  --overlay-text: #e8e8e8;
+  --overlay-text-strong: #ffffff;
+  --overlay-text-muted: rgba(232, 232, 232, 0.68);
+  --overlay-text-subtle: rgba(232, 232, 232, 0.46);
+  --overlay-icon-muted: rgba(232, 232, 232, 0.52);
+  --overlay-control-bg: rgba(255, 255, 255, 0.065);
+  --overlay-control-bg-hover: rgba(255, 255, 255, 0.095);
+  --overlay-control-bg-strong: rgba(255, 255, 255, 0.085);
+  --overlay-control-text: rgba(237, 241, 242, 0.86);
+  --overlay-context-text: #9bd5dd;
+  --overlay-accent: #0a84ff;
+  --overlay-accent-bg: rgba(10, 132, 255, 0.18);
+  --overlay-accent-border: rgba(10, 132, 255, 0.42);
+  --overlay-focus-ring: rgba(10, 132, 255, 0.22);
+  --overlay-danger-text: #ffb1aa;
+  --overlay-danger-bg: rgba(255, 120, 120, 0.08);
+  --overlay-danger-border: rgba(255, 120, 120, 0.18);
+  --overlay-warning-text: #ffcc66;
+  --overlay-warning-bg: rgba(200, 155, 60, 0.12);
+  --overlay-warning-border: rgba(200, 155, 60, 0.28);
+  --palette-cursor-width: 256px;
+  --launcher-frame-width: min(720px, calc(100vw - 40px));
+  --launcher-frame-height: min(440px, calc(100vh - 128px));
+  --launcher-frame-max-height: min(70vh, 520px);
+  --launcher-frame-radius: var(--overlay-radius);
+  --launcher-frame-padding: 0;
+  --launcher-frame-top: max(64px, 12vh);
+  --launcher-input-height: 56px;
+  --launcher-row-height: 44px;
+  --launcher-result-columns: 24px minmax(0, 1fr);
+  --launcher-row-padding-x: 16px;
+  --launcher-list-padding: 6px 8px 8px;
+  --loaded-target-gap: 6px;
+  --overlay-radius: 14px;
+  --overlay-radius-row: 8px;
+  --overlay-material-filter: none;
+  --overlay-shadow: 0 28px 86px rgba(0, 0, 0, 0.36);
+}
+
+html[data-theme="light"] .palette-overlay,
+html[data-theme="system"] .palette-overlay {
+  --overlay-material: rgba(248, 248, 249, 0.97);
+  --overlay-material-opaque: #f8f8f9;
+  --overlay-material-soft: rgba(0, 0, 0, 0.045);
+  --overlay-material-soft-opaque: #eeeeee;
+  --overlay-material-hover: rgba(0, 0, 0, 0.055);
+  --overlay-selection-bg: var(--overlay-material-hover);
+  --overlay-confirming-bg: rgba(165, 115, 0, 0.14);
+  --overlay-border: rgba(0, 0, 0, 0.1);
+  --overlay-border-muted: rgba(0, 0, 0, 0.065);
+  --overlay-text: #1f1f1f;
+  --overlay-text-strong: #000000;
+  --overlay-text-muted: rgba(31, 31, 31, 0.64);
+  --overlay-text-subtle: rgba(31, 31, 31, 0.44);
+  --overlay-icon-muted: rgba(31, 31, 31, 0.5);
+  --overlay-control-bg: rgba(0, 0, 0, 0.045);
+  --overlay-control-bg-hover: rgba(0, 0, 0, 0.058);
+  --overlay-control-bg-strong: rgba(0, 0, 0, 0.06);
+  --overlay-control-text: rgba(45, 45, 45, 0.86);
+  --overlay-context-text: #287d8b;
+  --overlay-accent: #006edb;
+  --overlay-accent-bg: rgba(0, 110, 219, 0.13);
+  --overlay-accent-border: rgba(0, 110, 219, 0.28);
+  --overlay-focus-ring: rgba(0, 110, 219, 0.18);
+  --overlay-danger-text: #a92820;
+  --overlay-danger-bg: rgba(169, 40, 32, 0.08);
+  --overlay-danger-border: rgba(169, 40, 32, 0.18);
+  --overlay-warning-text: #735200;
+  --overlay-warning-bg: rgba(165, 115, 0, 0.1);
+  --overlay-warning-border: rgba(165, 115, 0, 0.22);
+  --overlay-material-filter: none;
+  --overlay-shadow: 0 28px 86px rgba(0, 0, 0, 0.14);
+}
+
+.prompt-palette {
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  opacity: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.palette-overlay.is-palette-mode .prompt-palette,
+.palette-overlay.is-launcher-mode .prompt-palette,
+.palette-overlay.is-loaded-mode .prompt-palette,
+.palette-overlay.is-clip-feedback-mode .prompt-palette {
+  opacity: 1;
+}
+
+.palette-overlay:not(.is-palette-mode) .panel-rail,
+.palette-overlay:not(.is-palette-mode) .palette-prompt-control {
+  pointer-events: none;
+}
+
+.palette-overlay.is-palette-mode,
+.palette-overlay.is-launcher-mode {
+  cursor: default;
+}
+
+.palette-overlay.is-palette-mode,
+.palette-overlay.is-launcher-mode,
+.palette-overlay.is-loaded-mode {
+  background: transparent;
+}
+
+.palette-overlay.is-clip-feedback-mode {
+  background: transparent;
+  pointer-events: none;
+}
+
+html[data-theme="light"] .palette-overlay.is-palette-mode,
+html[data-theme="light"] .palette-overlay.is-launcher-mode,
+html[data-theme="light"] .palette-overlay.is-loaded-mode,
+html[data-theme="system"] .palette-overlay.is-palette-mode,
+html[data-theme="system"] .palette-overlay.is-launcher-mode,
+html[data-theme="system"] .palette-overlay.is-loaded-mode {
+  background: transparent;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="dark"] .palette-overlay,
+  html[data-theme="system"] .palette-overlay {
+    --overlay-material: rgba(32, 32, 34, 0.96);
+    --overlay-material-opaque: #202022;
+    --overlay-material-soft: rgba(255, 255, 255, 0.06);
+    --overlay-material-soft-opaque: #1c1c1e;
+    --overlay-material-hover: rgba(255, 255, 255, 0.095);
+    --overlay-selection-bg: var(--overlay-material-hover);
+    --overlay-confirming-bg: rgba(200, 155, 60, 0.18);
+    --overlay-border: rgba(255, 255, 255, 0.14);
+    --overlay-border-muted: rgba(255, 255, 255, 0.075);
+    --overlay-text: #e8e8e8;
+    --overlay-text-strong: #ffffff;
+    --overlay-text-muted: rgba(232, 232, 232, 0.68);
+    --overlay-text-subtle: rgba(232, 232, 232, 0.46);
+    --overlay-icon-muted: rgba(232, 232, 232, 0.52);
+    --overlay-control-bg: rgba(255, 255, 255, 0.065);
+    --overlay-control-bg-hover: rgba(255, 255, 255, 0.095);
+    --overlay-control-bg-strong: rgba(255, 255, 255, 0.085);
+    --overlay-control-text: rgba(237, 241, 242, 0.86);
+    --overlay-context-text: #9bd5dd;
+    --overlay-accent: #0a84ff;
+    --overlay-accent-bg: rgba(10, 132, 255, 0.18);
+    --overlay-accent-border: rgba(10, 132, 255, 0.42);
+    --overlay-focus-ring: rgba(10, 132, 255, 0.22);
+    --overlay-danger-text: #ffb1aa;
+    --overlay-danger-bg: rgba(255, 120, 120, 0.08);
+    --overlay-danger-border: rgba(255, 120, 120, 0.18);
+    --overlay-warning-text: #ffcc66;
+    --overlay-warning-bg: rgba(200, 155, 60, 0.12);
+    --overlay-warning-border: rgba(200, 155, 60, 0.28);
+    --overlay-material-filter: none;
+    --overlay-shadow: 0 28px 86px rgba(0, 0, 0, 0.36);
+  }
+}
+
+.palette-clip-feedback {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 650;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.palette-clip-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--overlay-icon-muted);
+  flex: 0 0 auto;
+}
+
+.palette-clip-count {
+  color: var(--overlay-text-strong);
+  font-weight: 600;
+}
+
+.meta-chip {
+  border: 1px solid var(--overlay-border-muted);
+  border-radius: 3px;
+  background: var(--overlay-control-bg);
+  color: var(--overlay-text-muted);
+  padding: 2px 6px;
+  font-size: 0.64rem;
+  line-height: 1.35;
+  white-space: nowrap;
+}
+
+.meta-chip-warning {
+  border-color: var(--overlay-warning-border);
+  background: var(--overlay-warning-bg);
+  color: var(--overlay-warning-text);
+}
+.palette-panel,
+.palette-launcher,
+.palette-search-panel,
+.palette-template,
+.palette-loaded,
+.palette-scratch,
+.palette-context-picker,
+.palette-launcher-shell,
+.palette-clip-feedback {
+  border: 1px solid var(--overlay-border);
+  background: var(--overlay-material);
+  background-clip: padding-box;
+  -webkit-backdrop-filter: var(--overlay-material-filter);
+  backdrop-filter: var(--overlay-material-filter);
+  box-shadow: var(--overlay-shadow);
+  color: var(--overlay-text);
+  isolation: isolate;
+}
+
+.palette-panel,
+.palette-launcher,
+.palette-search-panel,
+.palette-template,
+.palette-loaded,
+.palette-scratch,
+.palette-context-picker,
+.palette-launcher-shell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  border-radius: var(--overlay-radius);
+}
+
+.palette-launcher-dismiss-layer {
+  pointer-events: auto;
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background: transparent;
+}
+
+.palette-launcher-shell {
+  pointer-events: auto;
+  box-sizing: border-box;
+  display: grid;
+  width: var(--launcher-frame-width);
+  max-height: var(--launcher-frame-max-height);
+  border-radius: var(--launcher-frame-radius);
+  padding: var(--launcher-frame-padding);
+}
+
+.palette-launcher-body {
+  min-width: 0;
+  min-height: 0;
+}
+
+.palette-launcher-footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  min-height: 34px;
+  border-top: 1px solid var(--overlay-border-muted);
+  padding: 0 16px;
+  color: var(--overlay-text-muted);
+  font-size: 0.76rem;
+}
+
+.palette-launcher-hint {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.palette-launcher-hint kbd {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  padding: 0 6px;
+  background: var(--overlay-control-bg-strong);
+  color: var(--overlay-control-text);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.palette-overlay button:focus,
+.palette-overlay input:focus,
+.palette-overlay textarea:focus,
+.palette-overlay select:focus {
+  outline: none;
+}
+
+.palette-overlay button:focus-visible,
+.palette-overlay input:focus-visible,
+.palette-overlay textarea:focus-visible,
+.palette-overlay select:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--overlay-focus-ring);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .palette-overlay {
+    --overlay-material: var(--overlay-material-opaque);
+    --overlay-material-soft: var(--overlay-material-soft-opaque);
+    --overlay-material-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .palette-overlay,
+  .prompt-palette,
+  .palette-scratch-input {
+    transition: none;
+  }
+
+  .palette-scratch-refine-status::before,
+  .palette-scratch-alternative-shell.is-loading .palette-scratch-alternative {
+    animation: none;
+  }
+}

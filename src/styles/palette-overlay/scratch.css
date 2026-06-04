@@ -1,0 +1,208 @@
+.palette-scratch {
+  pointer-events: auto;
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: 0;
+  height: var(--launcher-frame-height);
+  padding: 0;
+}
+
+.palette-scratch::before {
+  content: none;
+}
+
+.palette-scratch-body {
+  display: grid;
+  gap: 0;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.palette-scratch-input {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 144px;
+  max-height: none;
+  border: 0;
+  border-radius: 0;
+  padding: 14px var(--launcher-row-padding-x);
+  resize: none;
+  overflow-y: auto;
+  background: transparent;
+  box-shadow: none;
+  color: var(--overlay-text-strong);
+  font: inherit;
+  font-size: 0.96rem;
+  line-height: 1.35;
+  outline: none;
+  transition:
+    border-color 120ms ease,
+    box-shadow 120ms ease,
+    background 120ms ease;
+}
+
+.palette-scratch-body > .palette-scratch-input:first-child:last-child {
+  height: 100%;
+}
+
+.palette-scratch-input::placeholder {
+  color: var(--overlay-text-subtle);
+}
+
+.palette-scratch-input.is-refining {
+  background: transparent;
+  color: var(--overlay-text-muted);
+}
+
+.palette-scratch-alternative-shell {
+  display: grid;
+  gap: 0;
+  min-width: 0;
+  border-top: 1px solid var(--overlay-border-muted);
+}
+
+.palette-scratch-alternative {
+  height: 124px;
+  min-height: 124px;
+  border: 0;
+  background: transparent;
+}
+
+.palette-scratch-alternative-shell.is-loading .palette-scratch-alternative {
+  color: transparent;
+  animation: palette-refine-breathe 1.15s ease-in-out infinite;
+}
+
+.palette-scratch-choicebar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  min-height: 34px;
+  border-top: 1px solid var(--overlay-border-muted);
+  padding: 0 var(--launcher-row-padding-x);
+}
+
+.palette-scratch-refine-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: auto;
+  color: var(--overlay-text-muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.palette-scratch-refine-status::before {
+  content: "";
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--overlay-border);
+  border-top-color: var(--overlay-accent);
+  border-radius: 999px;
+  animation: palette-refine-spin 820ms linear infinite;
+}
+
+.palette-scratch-error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 0;
+  border-top: 1px solid var(--overlay-danger-border);
+  border-radius: 0;
+  padding: 8px var(--launcher-row-padding-x);
+  background: var(--overlay-danger-bg);
+  color: var(--overlay-danger-text);
+  font-size: 0.76rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.palette-scratch-error span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.palette-scratch-command {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 24px;
+  border: 1px solid var(--overlay-border);
+  border-radius: 6px;
+  padding: 3px 7px 3px 9px;
+  background: var(--overlay-control-bg);
+  color: var(--overlay-text-strong);
+  font: inherit;
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1.15;
+  box-shadow: none;
+}
+
+.palette-scratch-command.is-primary {
+  border-color: var(--overlay-accent-border);
+  background: var(--overlay-accent-bg);
+  color: var(--overlay-text-strong);
+}
+
+.palette-scratch-command kbd {
+  min-width: 24px;
+  border-radius: 5px;
+  padding: 2px 5px;
+  background: var(--overlay-control-bg-strong);
+  color: inherit;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+}
+
+.palette-scratch-command.is-primary kbd {
+  background: var(--overlay-control-bg-strong);
+}
+
+.palette-scratch-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  min-height: 34px;
+  border-top: 1px solid var(--overlay-border-muted);
+  padding: 0 16px;
+}
+
+.palette-scratch-notice {
+  min-width: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--overlay-text-muted);
+  font-size: 0.7rem;
+  font-weight: 560;
+  line-height: 1.25;
+}
+
+@keyframes palette-refine-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes palette-refine-breathe {
+  0%,
+  100% {
+    opacity: 0.68;
+  }
+  50% {
+    opacity: 0.42;
+  }
+}

@@ -1,0 +1,22 @@
+name: pr-description-lint
+
+on:
+  pull_request:
+    types: [opened, edited, reopened, synchronize, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-pr-description:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: oven-sh/setup-bun@v2
+
+      - name: Validate PR description format
+        env:
+          PR_BODY_JSON: ${{ toJson(github.event.pull_request.body) }}
+        run: |
+          printf '%s' "$PR_BODY_JSON" | jq -r '.' > /tmp/pr_body.md
+          bun scripts/pr-body-check.mjs --file /tmp/pr_body.md

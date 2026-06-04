@@ -1,0 +1,34 @@
+@import "./palette-overlay/base.css";
+@import "./palette-overlay/palette.css";
+@import "./palette-overlay/search.css";
+@import "./palette-overlay/artifact-panel.css";
+@import "./palette-overlay/artifact-composer.css";
+@import "./palette-overlay/github-import.css";
+@import "./palette-overlay/project-write.css";
+@import "./palette-overlay/workflow-input.css";
+@import "./palette-overlay/recovery.css";
+@import "./palette-overlay/template.css";
+@import "./palette-overlay/loaded.css";
+@import "./palette-overlay/scratch.css";
+@import "./palette-overlay/context-picker.css";
+
+.palette-overlay.is-launcher-mode .prompt-palette {
+  width: 100vw;
+  height: 100vh;
+  transform: none !important;
+}
+
+.palette-overlay.is-launcher-mode .palette-launcher,
+.palette-overlay.is-launcher-mode .palette-launcher-shell {
+  pointer-events: auto;
+  position: fixed;
+  top: var(--launcher-frame-top);
+  right: auto;
+  bottom: auto;
+  left: 50%;
+  box-sizing: border-box;
+  width: var(--launcher-frame-width);
+  max-height: var(--launcher-frame-max-height);
+  transform: translateX(-50%);
+  z-index: 1;
+}
