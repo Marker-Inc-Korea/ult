@@ -6,7 +6,7 @@ export function createArgumentInspector() {
   const header = createElement("div", "palette-artifact-composer-card-header");
   const add = createElement("button", "palette-artifact-secondary-action", "Add");
   add.type = "button";
-  header.append(createElement("h2", undefined, "Arguments"), add);
+  header.append(createElement("h2", undefined, "Argument Schema"), add);
   const list = createElement("div", "palette-artifact-composer-arguments");
   section.append(header, list);
   return { root: section, list, add };

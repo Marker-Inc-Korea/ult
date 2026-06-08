@@ -101,9 +101,17 @@ fn bootstraps_editable_workflow_prompt_command_pairs() {
             .iter()
             .find(|command| command.id == pack.id)
             .unwrap_or_else(|| panic!("missing workflow command {}", pack.id));
+        let command_path_string = command_path.to_string_lossy().to_string();
         assert_eq!(command.prompt_id, pack.id);
         assert_eq!(command.title, pack.title);
+        assert_eq!(
+            command.source_path.as_deref(),
+            Some(command_path_string.as_str())
+        );
+        assert_eq!(command.contexts, Vec::<String>::new());
+        assert!(command.variable_values.is_empty());
         assert_eq!(command.actions, vec![super::LauncherCommandAction::Prepare]);
+        assert!(!command.home);
     }
 
     let _ = std::fs::remove_dir_all(root);

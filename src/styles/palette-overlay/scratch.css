@@ -191,6 +191,11 @@
   line-height: 1.25;
 }
 
+.palette-scratch-create-action {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
 @keyframes palette-refine-spin {
   to {
     transform: rotate(360deg);

@@ -41,6 +41,7 @@ test.describe("Ult visual smoke", () => {
       "Browse Library",
       "Scratch",
       "New Prompt",
+      "New Context",
       "Review Current Change",
       "Project Setup",
       "Preferences",
@@ -49,8 +50,9 @@ test.describe("Ult visual smoke", () => {
     await expect(rows.nth(1)).toContainText("Browse Library");
     await expect(rows.nth(2)).toContainText("Scratch");
     await expect(rows.nth(3)).toContainText("New Prompt");
-    await expect(rows.nth(4)).toContainText("Review Current Change");
-    await expect(rows.nth(5)).toContainText("Project Setup");
+    await expect(rows.nth(4)).toContainText("New Context");
+    await expect(rows.nth(5)).toContainText("Review Current Change");
+    await expect(rows.nth(6)).toContainText("Project Setup");
     await expect(rows.nth(rowCount - 1)).toContainText("Preferences");
     await expect(rows.first()).toHaveClass(/is-selected/);
     await expectSelectedWithinContainer(
@@ -279,10 +281,20 @@ test.describe("Ult visual smoke", () => {
     await openVisual(page, "launcher-scratch", "light");
 
     await expect(page.locator(".palette-scratch")).toBeVisible();
+    await expect(page.locator(".palette-scratch-footer")).toContainText("⌘S create");
+    await expect(page.locator(".palette-scratch-create-action")).toContainText("Create Prompt");
     await expectStableLauncherFrame(page);
     await expectNoHorizontalOverflow(page, ".palette-scratch-body");
 
     await expect(page).toHaveScreenshot("launcher-scratch-light.png");
+
+    await page.locator(".palette-scratch-create-action").click();
+    await expect(page.locator(".palette-artifact-panel.is-create-canvas")).toBeVisible();
+    await expect(page.locator(".palette-artifact-create-text"))
+      .toHaveValue(/Review the current diff/);
+    await expect(page.locator(".palette-artifact-create-handle"))
+      .toContainText("#review-the-current-diff-identify-risky-assumptions-and-run-the-smallest-useful-verification-before-editing-more-code");
+    await expect(page).toHaveScreenshot("launcher-scratch-promote-create-light.png");
   });
 
   test("Launcher artifact reader and composer keep stable large panels", async ({ page }) => {
@@ -291,6 +303,70 @@ test.describe("Ult visual smoke", () => {
     await expectStableLauncherFrame(page);
     await expectNoHorizontalOverflow(page, ".palette-artifact-reader-body");
     await expect(page).toHaveScreenshot("launcher-reader-dark.png");
+
+    await openVisual(page, "launcher-create-canvas", "light");
+    await expect(page.locator(".palette-artifact-panel.is-create-canvas")).toBeVisible();
+    await expect(page.locator(".palette-artifact-create-title"))
+      .toHaveAttribute("placeholder", "Prompt title");
+    await expect(page.locator(".palette-artifact-create-text"))
+      .toHaveAttribute("placeholder", "Tell the agent what to do...");
+    await expect(page.locator(".palette-artifact-create-handle")).toContainText("#new-prompt");
+    await expect(page.getByRole("button", { name: "Create and Load" })).toBeVisible();
+    await expect(page.locator(".palette-artifact-create-chip", { hasText: "ProjectNone" }))
+      .toHaveJSProperty("tagName", "SPAN");
+    await expectNoHorizontalOverflow(page, ".palette-artifact-create-body");
+    await expect(page).toHaveScreenshot("launcher-create-canvas-light.png");
+    await expectStableLauncherFrame(page);
+
+    await page.locator(".palette-artifact-create-chip", { hasText: "Advanced Editor" }).click();
+    await expect(page.locator(".palette-artifact-panel.is-composer")).toBeVisible();
+    await expect(page.locator(".palette-artifact-composer")).toContainText("Advanced Editor");
+    await expectNoHorizontalOverflow(page, ".palette-artifact-composer");
+    await expect(page).toHaveScreenshot("launcher-create-advanced-handoff-light.png");
+    await expectStableLauncherFrame(page);
+
+    await openVisual(page, "launcher-create-context", "light");
+    await expect(page.locator(".palette-artifact-panel.is-create-canvas")).toBeVisible();
+    await expect(page.locator(".palette-artifact-create-title"))
+      .toHaveAttribute("placeholder", "Context title");
+    await expect(page.locator(".palette-artifact-create-text"))
+      .toHaveAttribute("placeholder", "Give the agent reusable context...");
+    await expect(page.locator(".palette-artifact-create-handle")).toContainText("@new-context");
+    await expect(page.locator(".palette-artifact-create-chip")).toContainText([
+      "TypeContext",
+      "DestinationPersonal Library",
+      "ProjectNone",
+      "Advanced Editor",
+    ]);
+    await expect(page.getByRole("button", { name: "Use template" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Create and Load" })).toBeVisible();
+    await expectNoHorizontalOverflow(page, ".palette-artifact-create-body");
+    await expect(page).toHaveScreenshot("launcher-create-context-light.png");
+    await expectStableLauncherFrame(page);
+
+    await openVisual(page, "launcher-create-long", "light");
+    await expect(page.locator(".palette-artifact-panel.is-create-canvas")).toBeVisible();
+    await expect(page.locator(".palette-artifact-create-title"))
+      .toHaveValue("긴 한국어 제목과 Long English Create Canvas Title For Overflow");
+    await expect(page.locator(".palette-artifact-create-handle"))
+      .toContainText("#long-english-create-canvas-title-for-overflow");
+    await expectNoHorizontalOverflow(page, ".palette-artifact-create-body");
+    await expect(page).toHaveScreenshot("launcher-create-long-light.png");
+    await expectStableLauncherFrame(page);
+
+    await page.setViewportSize({ width: 680, height: 860 });
+    await openVisual(page, "launcher-create-long", "light");
+    await expect(page.locator(".palette-artifact-panel.is-create-canvas")).toBeVisible();
+    await expectNoHorizontalOverflow(page, ".palette-artifact-create-footer");
+    await expect(page).toHaveScreenshot("launcher-create-narrow-light.png");
+    await page.setViewportSize({ width: 1440, height: 1000 });
+
+    await openVisual(page, "launcher-create-template-picker", "light");
+    await expect(page.locator(".palette-artifact-create-template-picker")).toBeVisible();
+    await expect(page.locator(".palette-artifact-create-template-row")).toHaveCount(5);
+    await expectNoHorizontalOverflow(page, ".palette-artifact-create-body");
+    await expect(page).toHaveScreenshot("launcher-create-template-picker-light.png");
+    await expectStableLauncherFrame(page);
 
     await openVisual(page, "launcher-composer", "light");
     await expect(page.locator(".palette-artifact-panel.is-composer")).toBeVisible();

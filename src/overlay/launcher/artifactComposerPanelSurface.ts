@@ -75,7 +75,7 @@ export function renderArtifactComposerPanel(
   const shell = createLauncherShell(palette, actions, {
     tagName: "section",
     className: "palette-artifact-panel is-composer",
-    ariaLabel: `${composerVerb(state.kind)} ${artifactTypeLabels[artifactType]}`,
+    ariaLabel: `Advanced Editor: ${composerOperationLabel(state.kind, artifactType)}`,
     onEscape: actions.closeArtifactPanel,
   });
   shell.tabIndex = -1;
@@ -96,7 +96,7 @@ export function renderArtifactComposerPanel(
   const header = createElement("header", "palette-artifact-actions-header");
   header.append(
     createElement("span", "palette-artifact-breadcrumb", composerBreadcrumb(state, artifactType)),
-    createElement("strong", undefined, composerTitle(state.kind, artifactType)),
+    createElement("strong", undefined, "Advanced Editor"),
     createElement("small", undefined, composerSubtitle(sourceArtifact, artifactType)),
   );
 
@@ -145,10 +145,10 @@ export function renderArtifactComposerPanel(
     id.value = uniqueArtifactId(slugifyArtifactId(title.value), palette.prompts, originalId);
   });
 
-  const titleRow = createComposerField("Title", title, titleMessage);
-  const idRow = createComposerField("Handle", id, idMessage);
+  const titleRow = createComposerField("Display Title", title, titleMessage);
+  const idRow = createComposerField("Handle Override", id, idMessage);
   const descriptionRow = createComposerField("Description", description);
-  const bodyRow = createComposerField("Body", prompt, bodyMessage);
+  const bodyRow = createComposerField(composerBodyLabel(artifactType), prompt, bodyMessage);
   const fields = createElement("div", "palette-artifact-composer-fields");
   fields.append(titleRow, idRow, descriptionRow, bodyRow);
 
@@ -163,7 +163,7 @@ export function renderArtifactComposerPanel(
     const confirm = createCheckbox("Confirm before delivery", Boolean(initialDraft.confirm));
     const options = createElement("section", "palette-artifact-composer-card");
     options.append(
-      createElement("h2", undefined, "Options"),
+      createElement("h2", undefined, "Delivery Defaults"),
       pinned.root,
       confirm.root,
     );
@@ -324,7 +324,7 @@ function createComposerMetadata(
     ["lifecycle", "Persistent"],
     ["operation", composerVerb(kind)],
   ];
-  section.append(createElement("h2", undefined, "Metadata"));
+  section.append(createElement("h2", undefined, "Advanced Metadata"));
   const list = createElement("dl", "palette-artifact-composer-meta");
   for (const [label, value] of rows) {
     list.append(
@@ -351,13 +351,18 @@ function composerVerb(kind: "new" | "edit" | "duplicate") {
   return "Create";
 }
 
-function composerTitle(kind: "new" | "edit" | "duplicate", artifactType: PromptArtifactType) {
+function composerOperationLabel(
+  kind: "new" | "edit" | "duplicate",
+  artifactType: PromptArtifactType,
+) {
   return `${composerVerb(kind)} ${artifactTypeLabels[artifactType]}`;
 }
 
 function composerSubtitle(artifact: PromptDefinition | null, artifactType: PromptArtifactType) {
-  if (artifact) return `${artifactHandle(artifact)} ${artifact.title}`;
-  return `New persistent ${artifactTypeLabels[artifactType].toLowerCase()} package`;
+  if (artifact) {
+    return `${artifactHandle(artifact)} ${artifact.title} - identity, dependencies, and package metadata`;
+  }
+  return `New persistent ${artifactTypeLabels[artifactType].toLowerCase()} package - advanced fields`;
 }
 
 function composerBreadcrumb(
@@ -379,6 +384,12 @@ function composerBodyPlaceholder(artifactType: PromptArtifactType) {
   if (artifactType === "context") return "Write reusable context.";
   if (artifactType === "skill") return "Write SKILL.md instructions.";
   return "Write the prompt body. Use {{argument_1}} for fill-in values.";
+}
+
+function composerBodyLabel(artifactType: PromptArtifactType) {
+  if (artifactType === "context") return "Raw Context Body";
+  if (artifactType === "skill") return "SKILL.md Source";
+  return "Raw Prompt Body";
 }
 
 function errorMessage(error: unknown, fallback: string) {

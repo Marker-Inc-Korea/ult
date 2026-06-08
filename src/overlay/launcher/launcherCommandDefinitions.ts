@@ -155,7 +155,7 @@ export const MANAGEMENT_COMMANDS: LauncherCommand[] = [
     category: "Create",
     keywords: ["create", "new", "context", "at context"],
     aliases: ["create context", "새 컨텍스트", "컨텍스트 만들기"],
-    homePlacement: "search",
+    homePlacement: "home",
     artifactRequirement: "none",
   },
   {

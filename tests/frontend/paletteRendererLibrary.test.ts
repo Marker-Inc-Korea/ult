@@ -92,6 +92,21 @@ describe("palette renderer library behavior", () => {
     }
   });
 
+  test("keeps create entry points out of Browse Library command inventory", () => {
+    const palette = libraryRuntime();
+    palette.launcherLibraryFilter = "commands";
+
+    const labels = libraryRowsForPalette(palette)
+      .filter((row) => row.kind === "command")
+      .map((row) => row.kind === "command" ? row.command.label : "");
+
+    expect(labels).toContain("Review Repo");
+    expect(labels).not.toContain("Scratch");
+    expect(labels).not.toContain("New Prompt");
+    expect(labels).not.toContain("New Context");
+    expect(labels).not.toContain("New Skill");
+  });
+
   test("filters Library inventory with a Library-local query and sort controls", () => {
     const palette = libraryRuntime();
     const updates: string[] = [];

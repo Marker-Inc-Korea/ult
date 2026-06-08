@@ -72,13 +72,16 @@ function artifactReaderChrome(artifact: PromptDefinition) {
     createElement("strong", undefined, artifactHandle(artifact)),
     createElement("span", undefined, artifact.title),
   );
-  chrome.append(breadcrumb, title, artifactMetadata(artifact));
+  chrome.append(breadcrumb, title);
   return chrome;
 }
 
 function artifactMetadata(artifact: PromptDefinition) {
+  const card = createElement("section", "palette-artifact-metadata-card");
+  card.append(createElement("h2", undefined, "Metadata"));
   const grid = createElement("dl", "palette-artifact-metadata");
   const rows = [
+    ["handle", artifactHandle(artifact)],
     ["name", artifact.title],
     ["description", artifact.description || "No description"],
     ["kind", artifactTypeLabels[promptArtifactType(artifact)]],
@@ -95,12 +98,15 @@ function artifactMetadata(artifact: PromptDefinition) {
       createElement("dd", undefined, value),
     );
   }
-  return grid;
+  card.append(grid);
+  return card;
 }
 
 function artifactReaderBody(artifact: PromptDefinition) {
   const body = createLauncherBody("palette-artifact-reader-body");
-  body.append(renderMarkdownDocument(artifact.prompt));
+  const document = createElement("div", "palette-artifact-reader-document");
+  document.append(artifactMetadata(artifact), renderMarkdownDocument(artifact.prompt));
+  body.append(document);
   return body;
 }
 
@@ -209,10 +215,26 @@ function renderMarkdownDocument(markdown: string) {
 }
 
 function appendInlineMarkdown(parent: HTMLElement, text: string) {
-  const parts = text.split(/(`[^`]+`)/g);
+  const parts = text.split(/(`[^`]+`|\*\*[^*]+\*\*|__[^_]+__|\*[^*]+\*|_[^_]+_)/g);
   for (const part of parts) {
     if (part.startsWith("`") && part.endsWith("`") && part.length > 1) {
       parent.append(createElement("code", undefined, part.slice(1, -1)));
+    } else if (
+      ((part.startsWith("**") && part.endsWith("**"))
+        || (part.startsWith("__") && part.endsWith("__")))
+      && part.length > 4
+    ) {
+      const strong = createElement("strong");
+      appendInlineMarkdown(strong, part.slice(2, -2));
+      parent.append(strong);
+    } else if (
+      ((part.startsWith("*") && part.endsWith("*"))
+        || (part.startsWith("_") && part.endsWith("_")))
+      && part.length > 2
+    ) {
+      const emphasis = createElement("em");
+      appendInlineMarkdown(emphasis, part.slice(1, -1));
+      parent.append(emphasis);
     } else if (part) {
       parent.append(document.createTextNode(part));
     }

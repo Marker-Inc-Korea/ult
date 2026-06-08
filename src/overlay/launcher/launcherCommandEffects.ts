@@ -1,4 +1,5 @@
 import type { ExternalSkillDiscoveryIntent } from "../../data/externalSkillDiscovery";
+import type { ArtifactCreateInitialValues } from "./artifactCreateState";
 import type {
   LauncherLibraryFilter,
   PromptPaletteRuntime,
@@ -65,6 +66,13 @@ export type LauncherCommandEffect =
     fallbackMessage: string;
   }
   | {
+    type: "open-artifact-create-canvas";
+    artifactType: Extract<PromptArtifactType, "prompt" | "context">;
+    initialId?: string | null;
+    initialValues?: ArtifactCreateInitialValues;
+    fallbackMessage: string;
+  }
+  | {
     type: "open-github-import";
     fallbackMessage: string;
   }
@@ -75,6 +83,10 @@ export type LauncherCommandEffect =
   | {
     type: "open-skill-discovery";
     intent: ExternalSkillDiscoveryIntent;
+  }
+  | {
+    type: "open-skill-scaffold";
+    initialId?: string | null;
   }
   | {
     type: "open-project-write";

@@ -6,6 +6,9 @@ import {
 import { ensureSelectedPromptVisible } from "./overlay/launcher/searchState";
 import { syncClipFeedbackFromCatalog } from "./overlay/launcher/ephemeralContextState";
 import { syncOverlaySurfaceState } from "./overlay/shared/surfaceState";
+import {
+  artifactCreatePanelSignature,
+} from "./overlay/launcher/artifactCreateState";
 import type {
   AccessibilityStatus,
   AppSettings,
@@ -250,9 +253,11 @@ function panelArtifactId(panel: LauncherArtifactPanel | null) {
   if (
     !panel
     || panel.mode === "github-import"
+    || panel.mode === "create"
     || panel.mode === "project-setup"
     || panel.mode === "recovery"
     || panel.mode === "skill-discovery"
+    || panel.mode === "skill-scaffold"
     || panel.mode === "starter-packs"
     || panel.mode === "workflow-input"
   ) {
@@ -264,7 +269,17 @@ function panelArtifactId(panel: LauncherArtifactPanel | null) {
 function panelSignature(panel: LauncherArtifactPanel | null) {
   if (!panel) return "";
   if (panel.mode === "composer") {
-    return `${panel.kind}:${panel.artifactType}:${panel.initialId ?? ""}`;
+    return [
+      panel.kind,
+      panel.artifactType,
+      panel.initialId ?? "",
+      panel.initialDraft?.id ?? "",
+      panel.initialDraft?.title ?? "",
+      panel.initialDraft?.prompt ?? "",
+    ].join("\u0001");
+  }
+  if (panel.mode === "create") {
+    return artifactCreatePanelSignature(panel);
   }
   if (panel.mode === "github-import") {
     return [
@@ -284,6 +299,9 @@ function panelSignature(panel: LauncherArtifactPanel | null) {
   }
   if (panel.mode === "skill-discovery") {
     return panel.intent;
+  }
+  if (panel.mode === "skill-scaffold") {
+    return panel.initialId ?? "";
   }
   if (panel.mode === "workflow-input") {
     return [

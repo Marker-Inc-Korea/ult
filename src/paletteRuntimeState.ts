@@ -22,6 +22,7 @@ import type {
   ProjectSetupResult,
 } from "./overlay/launcher/projectSetupTypes";
 import type { ExternalSkillDiscoveryIntent } from "./data/externalSkillDiscovery";
+import type { LauncherArtifactCreatePanel } from "./overlay/launcher/artifactCreateState";
 
 export type OverlaySessionState = {
   active: boolean;
@@ -64,6 +65,7 @@ export type LauncherArtifactComposerPanel = {
     artifactType: PromptArtifactType;
     artifactId?: string | null;
     initialId?: string | null;
+    initialDraft?: PromptDefinition | null;
 };
 
 export type LauncherStarterPacksPanel = {
@@ -74,6 +76,11 @@ export type LauncherStarterPacksPanel = {
 export type LauncherSkillDiscoveryPanel = {
     mode: "skill-discovery";
     intent: ExternalSkillDiscoveryIntent;
+};
+
+export type LauncherSkillScaffoldPanel = {
+    mode: "skill-scaffold";
+    initialId?: string | null;
 };
 
 export type LauncherWorkflowInputPanel = {
@@ -136,8 +143,10 @@ export type LauncherPanelByMode = {
   actions: LauncherArtifactActionsPanel;
   delete: LauncherArtifactDeletePanel;
   composer: LauncherArtifactComposerPanel;
+  create: LauncherArtifactCreatePanel;
   "starter-packs": LauncherStarterPacksPanel;
   "skill-discovery": LauncherSkillDiscoveryPanel;
+  "skill-scaffold": LauncherSkillScaffoldPanel;
   "workflow-input": LauncherWorkflowInputPanel;
   recovery: LauncherRecoveryPanel;
   "github-import": LauncherGitHubImportPanel;

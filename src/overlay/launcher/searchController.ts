@@ -21,6 +21,7 @@ import {
 import {
   applyLauncherCommandEffects,
   type OpenArtifactComposer,
+  type OpenArtifactCreateCanvas,
   type OpenGitHubImport,
   type OpenProjectArtifactWrite,
   type OpenProjectSetup,
@@ -31,6 +32,7 @@ import { selectedLauncherRow } from "./launcherRows";
 
 export type {
   OpenArtifactComposer,
+  OpenArtifactCreateCanvas,
   OpenGitHubImport,
   OpenProjectArtifactWrite,
   OpenProjectSetup,
@@ -160,6 +162,7 @@ export function runLauncherCommand(
   openProjectArtifactWrite?: OpenProjectArtifactWrite,
   openProjectSetup?: OpenProjectSetup,
   openStarterPacks?: OpenStarterPacks,
+  openArtifactCreateCanvas?: OpenArtifactCreateCanvas,
 ) {
   const effects = launcherCommandCapability(command).execute({
     palette,
@@ -176,6 +179,7 @@ export function runLauncherCommand(
     openProjectArtifactWrite,
     openProjectSetup,
     openStarterPacks,
+    openArtifactCreateCanvas,
   });
 }
 

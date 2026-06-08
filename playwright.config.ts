@@ -1,5 +1,8 @@
 import { defineConfig } from "@playwright/test";
 
+const visualPort = process.env.ULT_VISUAL_PORT ?? "5173";
+const visualBaseUrl = `http://127.0.0.1:${visualPort}`;
+
 export default defineConfig({
   testDir: "./tests/visual",
   testMatch: "**/*.visual.spec.ts",
@@ -12,7 +15,7 @@ export default defineConfig({
     },
   },
   use: {
-    baseURL: "http://127.0.0.1:5173",
+    baseURL: visualBaseUrl,
     browserName: "webkit",
     colorScheme: "light",
     deviceScaleFactor: 1,
@@ -22,9 +25,9 @@ export default defineConfig({
     },
   },
   webServer: {
-    command: "bun run dev",
+    command: `bunx --bun vite --host 127.0.0.1 --port ${visualPort} --strictPort`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    url: "http://127.0.0.1:5173/tests/visual/harness.html",
+    url: `${visualBaseUrl}/tests/visual/harness.html`,
   },
 });

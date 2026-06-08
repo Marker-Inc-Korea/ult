@@ -148,15 +148,15 @@ const STATIC_COMMAND_BEHAVIORS: Partial<Record<LauncherCommandId, StaticCommandB
   },
   "add-prompt": {
     primaryAction: () => "Create",
-    execute: () => openComposer("prompt", null, "Prompt creation opens in Launcher."),
+    execute: () => openCreateCanvas("prompt", null, "Prompt creation opens in Launcher."),
   },
   "add-context": {
     primaryAction: () => "Create",
-    execute: () => openComposer("context", null, "Context creation opens in Launcher."),
+    execute: () => openCreateCanvas("context", null, "Context creation opens in Launcher."),
   },
   "add-skill": {
     primaryAction: () => "Create",
-    execute: () => openComposer("skill", null, "Skill creation opens in Launcher."),
+    execute: () => openSkillScaffold(null),
   },
   "import-github": {
     primaryAction: () => "Open Import",
@@ -266,19 +266,19 @@ export const DYNAMIC_COMMAND_CAPABILITIES: LauncherCommandCapability[] = [
     id: "create-prompt",
     sectionLabel: () => "Create",
     primaryAction: () => "Create",
-    execute: ({ command }) => openComposer("prompt", command.draftId, "Prompt creation opens in Launcher."),
+    execute: ({ command }) => openCreateCanvas("prompt", command.draftId, "Prompt creation opens in Launcher."),
   },
   {
     id: "create-context",
     sectionLabel: () => "Create",
     primaryAction: () => "Create",
-    execute: ({ command }) => openComposer("context", command.draftId, "Context creation opens in Launcher."),
+    execute: ({ command }) => openCreateCanvas("context", command.draftId, "Context creation opens in Launcher."),
   },
   {
     id: "create-skill",
     sectionLabel: () => "Create",
     primaryAction: () => "Create",
-    execute: ({ command }) => openComposer("skill", command.draftId, "Skill creation opens in Launcher."),
+    execute: ({ command }) => openSkillScaffold(command.draftId),
   },
 ];
 
@@ -365,14 +365,20 @@ function workflowContextHandleText(palette: LauncherCommandExecutionContext["pal
     .join(" ");
 }
 
-function openComposer(
-  artifactType: PromptArtifactType,
+function openSkillScaffold(initialId: string | null | undefined): LauncherCommandEffect {
+  return {
+    type: "open-skill-scaffold",
+    initialId: initialId ?? null,
+  };
+}
+
+function openCreateCanvas(
+  artifactType: Extract<PromptArtifactType, "prompt" | "context">,
   initialId: string | null | undefined,
   fallbackMessage: string,
 ): LauncherCommandEffect {
   return {
-    type: "open-artifact-composer",
-    kind: "new",
+    type: "open-artifact-create-canvas",
     artifactType,
     initialId: initialId ?? null,
     fallbackMessage,

@@ -105,11 +105,12 @@ This report is the human release gate. Replace every \`TODO\` result with
 | Native delivery | Accessibility granted path delivers to the explicitly clicked target app and closes the loaded surface after execution. | TODO |
 | Explicit Copy | Copy mode is explicit; failed native delivery does not silently switch to Copy. | TODO |
 | Palette | Palette shows pinned persistent prompts only, stays cursor-adjacent, and has no execution buttons. | TODO |
-| Launcher Search | Search opens in the shared top-centered Launcher shell, \`/\` lists persistent prompts only, \`@\` lists context files plus non-expired ephemeral contexts, and \`\$skill\` rows open local skill packages. | TODO |
-| Artifact actions | Launcher can read, add, edit, duplicate, delete, and reveal local prompts and contexts, and reveal local skill package sources without opening Preferences. | TODO |
+| Launcher Search | Search opens in the shared top-centered Launcher shell; \`#\` lists persistent prompts, \`@\` lists context files plus non-expired ephemeral contexts, \`\$skill\` rows open local skill packages, and \`/\` lists Launcher commands only. | TODO |
+| Create canvas | New Prompt and New Context open the body-first create canvas, template use is local-only, Advanced Editor is reachable, Create saves locally without loading/delivering, and project status remains explicit without reading project files. | TODO |
+| Artifact actions | Launcher can read, create, edit, duplicate, delete, and reveal local prompts and contexts, and reveal local skill package sources without opening Preferences. | TODO |
 | Project writes | Launcher project write actions require a target directory, preview exact files, stay out of default delivery, and require explicit overwrite confirmation before replacing project files. | TODO |
 | Template execution | Variable values are collected in Launcher variables mode, support \`@context\` insertion, final \`Enter\` loads once, and values are not saved to usage history. | TODO |
-| Scratch execution | Scratch opens in the shared top-centered Launcher shell, prepares once, and saves prepared scratch prompts as 7-day ephemeral prompts. | TODO |
+| Scratch execution | Scratch opens in the shared top-centered Launcher shell, prepares once, saves prepared scratch prompts as 7-day ephemeral prompts, and can promote text into create canvas without loading or delivering. | TODO |
 | Fresh install | App launches quietly into the menu bar, Preferences opens intentionally, starter prompts live under \`~/.ult/personal-library\`, and relaunch preserves settings plus the library. | TODO |
 | Personal Library boundary | Fresh installs create \`~/.ult/personal-library/persistent/prompts/<handle>/PROMPT.md\`; files outside \`~/.ult/personal-library\` are ignored; loose files under \`persistent/skills\` are ignored; no \`ephemeral/skills\` folder is created. | TODO |
 | Skill source reveal | \`\$skill\` rows reveal the local \`SKILL.md\` source, keep Launcher open on reveal failure, and never load skills for prompt delivery. | TODO |

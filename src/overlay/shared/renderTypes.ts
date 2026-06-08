@@ -8,6 +8,7 @@ import type {
   LauncherLibraryFilter,
   LauncherLibrarySort,
 } from "../../paletteRuntime";
+import type { ArtifactCreateInitialValues } from "../launcher/artifactCreateState";
 import type { LauncherCommand } from "../launcher/launcherCommands";
 
 export type LauncherArtifactActionId =
@@ -48,6 +49,12 @@ export type PaletteRenderActions = {
     artifactType: PromptArtifactType,
     artifactId?: string | null,
     initialId?: string | null,
+    initialDraft?: PromptDefinition | null,
+  ) => void;
+  openArtifactCreateCanvas: (
+    artifactType: Extract<PromptArtifactType, "prompt" | "context">,
+    initialId?: string | null,
+    initialValues?: ArtifactCreateInitialValues,
   ) => void;
   openArtifactDelete: (artifactId?: string | null) => void;
   openProjectArtifactWrite: (
@@ -65,6 +72,7 @@ export type PaletteRenderActions = {
     originalId: string | null,
     draft: PromptDefinition,
   ) => Promise<void>;
+  prepareCreatedArtifact: (artifact: PromptDefinition) => void;
   deleteArtifact: (artifactId: string) => Promise<void>;
   openStarterPacks: () => void;
   openGitHubImport: () => void;
@@ -123,6 +131,7 @@ export type PaletteRenderActions = {
   refineScratch: () => void;
   acceptScratchRefinement: () => void;
   restoreScratchOriginal: () => void;
+  promoteScratchToCreate: () => void;
   submitScratch: () => void;
   cancelScratch: () => void;
   applyLoaded: () => void;

@@ -4,6 +4,7 @@ import { BASE_COMMANDS } from "../../src/overlay/launcher/launcherCommandDefinit
 import {
   nativeInvokeCommandNames,
   readOptionalText,
+  readSources,
   readText,
   rustFunctionBody,
   rustInvokeHandlerCommandNames,
@@ -105,6 +106,80 @@ describe("privacy and explicit delivery contract", () => {
     );
     expect(nativeSelectionSyncBody).toContain('palette.launcherMode === "recent"');
     expect(nativeSelectionSyncBody).toContain("actions.loadSelected(null);");
+  });
+
+  test("keeps create, search, and built-in template browsing metadata-only", () => {
+    const createSearchTemplateSources = readSources([
+      "src/overlay/launcher/artifactCreateCanvasSurface.ts",
+      "src/overlay/launcher/artifactCreateDraft.ts",
+      "src/overlay/launcher/artifactCreateState.ts",
+      "src/overlay/launcher/artifactCreateTemplates.ts",
+      "src/overlay/launcher/searchController.ts",
+      "src/overlay/launcher/launcherSearchIndex.ts",
+      "src/overlay/launcher/launcherSearchCollector.ts",
+      "src/overlay/launcher/launcherSearchArtifactScoring.ts",
+      "src/overlay/launcher/launcherSearchCommandScoring.ts",
+      "src/overlay/launcher/commandCreationContract.ts",
+      "src/overlay/launcher/workflowBuilderContract.ts",
+      "src/overlay/launcher/skillScaffoldContract.ts",
+    ]);
+    const scoring = readText("src/overlay/launcher/launcherSearchArtifactScoring.ts");
+    const searchableArtifactTextBody = scoring.slice(
+      scoring.indexOf("function searchableArtifactText"),
+      scoring.indexOf("function launcherArtifactPageSize"),
+    );
+    const commandScoring = readText("src/overlay/launcher/launcherSearchCommandScoring.ts");
+    const searchableCommandTextBody = commandScoring.slice(
+      commandScoring.indexOf("function searchableCommandText"),
+      commandScoring.indexOf("function commandScore"),
+    );
+    const commandContract = readText("src/overlay/launcher/commandCreationContract.ts");
+    const workflowContract = readText("src/overlay/launcher/workflowBuilderContract.ts");
+    const skillContract = readText("src/overlay/launcher/skillScaffoldContract.ts");
+
+    for (const forbidden of [
+      "native.",
+      "invokeNative",
+      "navigator.clipboard",
+      "captureEphemeralContext",
+      "previewProject",
+      "writeProject",
+      "readFileSync",
+      "terminal output",
+      "terminal contents",
+      "shell history",
+      "shell_history",
+      "clipboard history",
+      "agent output",
+    ]) {
+      expect(createSearchTemplateSources).not.toContain(forbidden);
+    }
+    expect(searchableArtifactTextBody).toContain("item.title");
+    expect(searchableArtifactTextBody).toContain("item.handle");
+    expect(searchableArtifactTextBody).not.toContain("prompt.prompt");
+    expect(searchableArtifactTextBody).not.toContain("description");
+    expect(searchableCommandTextBody).toContain("command.userCommand?.source_path");
+    expect(searchableCommandTextBody).toContain("command.description");
+    expect(searchableCommandTextBody).toContain("item.keywords");
+    expect(searchableCommandTextBody).toContain("item.aliases");
+    expect(searchableCommandTextBody).not.toContain("prompt.prompt");
+    expect(searchableCommandTextBody).not.toContain("body");
+    expect(commandContract).toContain("bodyIndexed: false");
+    expect(commandContract).toContain("promptDeliveryArtifact: false");
+    expect(workflowContract).toContain('model: "prompt-command-pair"');
+    expect(workflowContract).toContain('referencePrivacy: "ids-and-handles-only"');
+    expect(workflowContract).toContain("copiedPrivateBodiesToHistoryOrSearch: false");
+    expect(workflowContract).toContain("terminalReads: false");
+    expect(workflowContract).toContain("projectScans: false");
+    expect(workflowContract).toContain("implicitPromptDelivery: false");
+    expect(skillContract).toContain("sourceOriented: true");
+    expect(skillContract).toContain("deliverablePromptArtifact: false");
+    expect(skillContract).toContain("promptContextCreateCanvas: false");
+    expect(skillContract).toContain("readsProjectFiles: false");
+    expect(skillContract).toContain("readsTerminalOutput: false");
+    expect(skillContract).toContain("readsAgentOutput: false");
+    expect(skillContract).toContain("writesProjectFiles: false");
+    expect(skillContract).toContain("installsExternalPackages: false");
   });
 
   test("keeps overlay surface transitions centralized", () => {

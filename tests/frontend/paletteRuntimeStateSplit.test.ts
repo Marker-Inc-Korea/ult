@@ -12,6 +12,10 @@ import {
   startPromptPaletteScratchRefinement,
 } from "../../src/paletteRuntime";
 import { pasteSelectedEphemeralContext } from "../../src/overlay/loaded/deliveryController";
+import {
+  artifactCreatePanelSignature,
+  createLauncherArtifactCreatePanel,
+} from "../../src/overlay/launcher/artifactCreateState";
 import { selectLauncherPanelActionDelta } from "../../src/overlay/launcher/launcherCommands";
 import { native } from "../../src/native";
 import type { PreparedPromptExecution } from "../../src/promptExecutor";
@@ -68,6 +72,46 @@ describe("palette runtime state split behavior", () => {
     expect(palette.launcherArtifactPanel).toBeNull();
     expect(palette.launcherCommandIndex).toBe(2);
     expect(palette.launcherPanelActionIndex).toBe(0);
+  });
+
+  test("keeps create canvas panel state normalized outside generic Launcher state", () => {
+    const palette = runtime(4);
+    palette.surfaceMode = "search";
+    palette.overlayMode = "launcher";
+    palette.launcherMode = "search";
+    palette.launcherCommandIndex = 2;
+    palette.launcherPanelActionIndex = 3;
+
+    const panel = createLauncherArtifactCreatePanel("prompt", "review-patch", {
+      body: "Review the current change.",
+    });
+
+    expect(setPromptPaletteArtifactPanel(palette, panel)).toBe(true);
+    expect(palette.launcherArtifactPanel).toEqual({
+      mode: "create",
+      artifactType: "prompt",
+      initialId: "review-patch",
+      initialTitle: null,
+      initialBody: "Review the current change.",
+    });
+    expect(artifactCreatePanelSignature(panel)).toBe(
+      "prompt\u0001review-patch\u0001\u0001Review the current change.",
+    );
+    expect(palette.launcherCommandIndex).toBe(2);
+    expect(palette.launcherPanelActionIndex).toBe(0);
+
+    expect(setPromptPaletteArtifactPanel(
+      palette,
+      createLauncherArtifactCreatePanel("prompt", "review-patch", {
+        body: "Review the current change.",
+      }),
+    )).toBe(false);
+    expect(setPromptPaletteArtifactPanel(
+      palette,
+      createLauncherArtifactCreatePanel("prompt", "review-patch", {
+        body: "Review a different change.",
+      }),
+    )).toBe(true);
   });
 
   test("Search -> Library -> Search resets only the scoped sessions that changed", () => {

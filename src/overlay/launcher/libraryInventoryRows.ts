@@ -148,7 +148,11 @@ function libraryCommandsForPalette(palette: PromptPaletteRuntime) {
     "create-skill",
   ]);
   return [...BASE_COMMANDS, ...userLauncherCommands(palette)]
-    .filter((command) => !hiddenFromInventory.has(command.id))
+    .filter((command) =>
+      !hiddenFromInventory.has(command.id)
+      && command.category !== "Create"
+      && command.category !== "Scratch"
+    )
     .sort(compareLibraryCommands);
 }
 

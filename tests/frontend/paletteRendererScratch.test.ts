@@ -22,6 +22,7 @@ describe("palette renderer scratch prompt", () => {
     const palette = runtime();
     let updatedText = "";
     let refineCount = 0;
+    let promoteCount = 0;
     let submitCount = 0;
     let cancelCount = 0;
 
@@ -31,6 +32,9 @@ describe("palette renderer scratch prompt", () => {
       },
       refineScratch: () => {
         refineCount += 1;
+      },
+      promoteScratchToCreate: () => {
+        promoteCount += 1;
       },
       submitScratch: () => {
         submitCount += 1;
@@ -59,6 +63,12 @@ describe("palette renderer scratch prompt", () => {
     expect(newline.prevented).toBe(true);
     expect(updatedText).toBe("line one\n");
     expect(submitCount).toBe(0);
+
+    const promote = keyEvent("s", { metaKey: true });
+    textarea?.dispatch("keydown", promote);
+    expect(promote.prevented).toBe(true);
+    expect(promoteCount).toBe(1);
+    expect(updatedText).toBe("line one\n");
 
     const submit = keyEvent("Enter");
     textarea?.dispatch("keydown", submit);
@@ -211,17 +221,36 @@ describe("palette renderer scratch prompt", () => {
     expect(findAllByTag(error!, "button")).toHaveLength(0);
   });
 
-  test("renders save/load as a keyboard command instead of a CRUD action button", () => {
+  test("renders explicit create promotion without replacing scratch load", () => {
     const palette = runtime();
+    let promoted = false;
+    let updatedText = "";
 
-    renderPromptPalette(palette, actions());
+    renderPromptPalette(palette, actions({
+      promoteScratchToCreate: () => {
+        promoted = true;
+      },
+      updateScratchText: (text) => {
+        updatedText = text;
+      },
+    }));
 
     const root = palette.container as unknown as FakeElement;
     const footer = findByClass(root, "palette-scratch-footer");
     expect(footer).not.toBeNull();
     expect(textOf(footer!)).toContain("Enter load");
-    expect(textOf(footer!)).not.toContain("⌘S");
+    expect(textOf(footer!)).toContain("⌘S create");
     expect(textOf(footer!)).not.toContain("Save Ephemeral");
-    expect(findAllByTag(footer!, "button")).toHaveLength(0);
+    const create = findAllByTag(footer!, "button").find((button) =>
+      textOf(button) === "Create Prompt"
+    );
+    expect(create).not.toBeNull();
+
+    const textarea = findByClass(root, "palette-scratch-input") as FakeElement;
+    textarea.value = "Promote this scratch draft.";
+    create!.dispatch("click", keyEvent("click"));
+
+    expect(updatedText).toBe("Promote this scratch draft.");
+    expect(promoted).toBe(true);
   });
 });

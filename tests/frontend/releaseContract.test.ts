@@ -15,6 +15,7 @@ describe("release contract", () => {
     const releaseBaseline = readOptionalText("docs/RELEASE_BASELINE.md");
     const releaseWorkflow = readText(".github/workflows/release.yml");
     const readme = readText("README.md");
+    const readmeKo = readText("README.ko.md");
     const spec = readOptionalText("SPEC.md");
     const design = readOptionalText("DESIGN.md");
 
@@ -51,6 +52,14 @@ describe("release contract", () => {
     expect(readme).toContain("contexts/<handle>/CONTEXT.md");
     expect(readme).toContain("skills/<handle>/SKILL.md");
     expect(readme).toContain("persistent/skills/diagnose/SKILL.md");
+    expect(readme).toContain("Creating Prompts And Contexts");
+    expect(readme).toContain("Run `New Prompt` or `New Context`");
+    expect(readme).toContain("`Create` saves to the Personal Library only");
+    expect(readme).toContain("`Use template` fills or appends");
+    expect(readme).toContain("`Create Prompt`");
+    expect(readmeKo).toContain("Prompt와 Context 만들기");
+    expect(readmeKo).toContain("`New Prompt`나 `New Context`");
+    expect(readmeKo).toContain("`Create`는 Personal Library에만 저장");
     if (releaseBaseline && spec && design) {
       expect(releaseBaseline).toContain("make all");
       expect(releaseBaseline).toContain("must stay free of Developer ID");
@@ -67,6 +76,8 @@ describe("release contract", () => {
     expect(alphaReport).toContain("Explicit Copy");
     expect(alphaReport).toContain("Launcher Search");
     expect(alphaReport).toContain("shared top-centered Launcher shell");
+    expect(alphaReport).toContain("Create canvas");
+    expect(alphaReport).toContain("New Prompt and New Context open the body-first create canvas");
     expect(alphaReport).toContain("Artifact actions");
     expect(alphaReport).toContain("Project writes");
     expect(alphaReport).toContain("target directory");
@@ -90,10 +101,12 @@ describe("release contract", () => {
 
     expect(manualQa).toContain("Open Launcher");
     expect(manualQa).toContain("Open Launcher in Scratch mode");
+    expect(manualQa).toContain('DEFAULT_SEARCH_SHORTCUT="Option+Space"');
     expect(manualQa).toContain("It does not automate Accessibility");
     expect(manualQa).toContain("bun run release:alpha:report");
     expect(alphaGate).toContain("Open Launcher shortcut");
     expect(alphaGate).toContain("Open Launcher Scratch shortcut");
+    expect(alphaGate).toContain('DEFAULT_SEARCH_SHORTCUT="Option+Space"');
     expect(alphaGate).toContain("Palette / Launcher / Native Delivery");
     if (alphaDogfooding && manualChecks && design) {
       expect(alphaDogfooding).toContain("visual, and Rust tests");
@@ -102,6 +115,8 @@ describe("release contract", () => {
       expect(alphaDogfooding).toContain("final `Enter` loads once");
       expect(alphaDogfooding).toContain("`#` lists persistent prompts");
       expect(alphaDogfooding).toContain("`/` lists Launcher commands");
+      expect(alphaDogfooding).toContain("Create canvas");
+      expect(alphaDogfooding).toContain("New Prompt and New Context open the body-first create canvas");
       expect(alphaDogfooding).toContain("Old typed `/prompt-id` no longer loads or prepares prompts");
       expect(alphaDogfooding).toContain("command recovery for no-match slash input");
       expect(alphaDogfooding).toContain("artifact id, artifact kind, delivery mode");
@@ -118,6 +133,10 @@ describe("release contract", () => {
       expect(alphaDogfooding).not.toContain("skills/persistent");
       expect(alphaDogfooding).not.toContain("skills/ephemeral");
       expect(manualChecks).toContain("The cursor palette shows pinned persistent prompt rows only");
+      expect(manualChecks).toContain("Create canvas");
+      expect(manualChecks).toContain("New Prompt and New Context open a body-first create canvas");
+      expect(manualChecks).toContain("Creating a prompt or context saves only to Personal Library");
+      expect(manualChecks).toContain("Use template");
       expect(manualChecks).toContain("Recent items appear through Launcher ranking and load through the cursor-adjacent loaded state");
       expect(manualChecks).toContain("they do not reopen Palette or execute immediately");
       expect(manualChecks).toContain("After the user clicks the target app");

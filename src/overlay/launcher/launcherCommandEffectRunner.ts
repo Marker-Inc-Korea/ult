@@ -18,6 +18,7 @@ import type {
   PromptDefinition,
 } from "../../types";
 import type { PreparePromptOptions } from "../loaded/deliveryController";
+import type { ArtifactCreateInitialValues } from "./artifactCreateState";
 import {
   libraryDiagnosticsFromLoadResult,
   orderPaletteArtifacts,
@@ -42,6 +43,13 @@ export type OpenArtifactComposer = (
   artifactType: PromptArtifactType,
   artifactId?: string | null,
   initialId?: string | null,
+  initialDraft?: PromptDefinition | null,
+) => void;
+
+export type OpenArtifactCreateCanvas = (
+  artifactType: Extract<PromptArtifactType, "prompt" | "context">,
+  initialId?: string | null,
+  initialValues?: ArtifactCreateInitialValues,
 ) => void;
 
 export type OpenGitHubImport = () => void;
@@ -62,6 +70,7 @@ export type LauncherCommandEffectRunnerOptions = {
   rerender: () => void;
   preparePrompt: PrepareSearchPrompt;
   openArtifactComposer?: OpenArtifactComposer;
+  openArtifactCreateCanvas?: OpenArtifactCreateCanvas;
   openGitHubImport?: OpenGitHubImport;
   openProjectArtifactWrite?: OpenProjectArtifactWrite;
   openProjectSetup?: OpenProjectSetup;
@@ -139,6 +148,19 @@ const EFFECT_RUNNERS = {
     setPromptPaletteLauncherFeedback(context.palette, effect.fallbackMessage);
     context.requestRerender();
   },
+  "open-artifact-create-canvas": (effect, context) => {
+    context.flush();
+    if (context.openArtifactCreateCanvas) {
+      context.openArtifactCreateCanvas(
+        effect.artifactType,
+        effect.initialId ?? null,
+        effect.initialValues,
+      );
+      return;
+    }
+    setPromptPaletteLauncherFeedback(context.palette, effect.fallbackMessage);
+    context.requestRerender();
+  },
   "open-github-import": (effect, context) => {
     context.flush();
     if (context.openGitHubImport) {
@@ -161,6 +183,13 @@ const EFFECT_RUNNERS = {
     setPromptPaletteArtifactPanel(context.palette, {
       mode: "skill-discovery",
       intent: effect.intent,
+    });
+    context.requestRerender();
+  },
+  "open-skill-scaffold": (effect, context) => {
+    setPromptPaletteArtifactPanel(context.palette, {
+      mode: "skill-scaffold",
+      initialId: effect.initialId ?? null,
     });
     context.requestRerender();
   },

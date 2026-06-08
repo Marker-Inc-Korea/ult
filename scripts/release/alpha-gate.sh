@@ -14,7 +14,7 @@ DMG_PATH="${2:-src-tauri/target/release/bundle/dmg/${PRODUCT_NAME}_${VERSION}_${
 SETTINGS_PATH="${ULT_SETTINGS_PATH:-$HOME/Library/Application Support/${BUNDLE_ID}/settings.toml}"
 DOGFOODING_PATH="${ULT_ALPHA_DOGFOODING_PATH:-docs/ALPHA_DOGFOODING.md}"
 DEFAULT_OPEN_SHORTCUT="Cmd+U"
-DEFAULT_SEARCH_SHORTCUT="Cmd+Option+Space"
+DEFAULT_SEARCH_SHORTCUT="Option+Space"
 DEFAULT_SCRATCH_SHORTCUT="Cmd+Option+Control+S"
 
 read_toml_string() {

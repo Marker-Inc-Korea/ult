@@ -24,6 +24,10 @@ import {
   reportLauncherArtifactUnavailable,
   selectedLauncherArtifact,
 } from "./artifactSelection";
+import {
+  createLauncherArtifactCreatePanel,
+  type ArtifactCreateInitialValues,
+} from "./artifactCreateState";
 
 export type PrepareSearchPrompt = (
   prompt: PromptDefinition,
@@ -103,19 +107,42 @@ export function createArtifactPanelController(options: {
     artifactType: PromptArtifactType,
     artifactId?: string | null,
     initialId?: string | null,
+    initialDraft?: PromptDefinition | null,
   ) => {
     const source = artifactId ? selectedLauncherArtifact(palette, artifactId) : null;
     if ((kind === "edit" || kind === "duplicate") && !source) {
       reportLauncherArtifactUnavailable(palette, rerender);
       return;
     }
-    if (!setPromptPaletteArtifactPanel(palette, {
+    const panel: Extract<
+      PromptPaletteRuntime["launcherArtifactPanel"],
+      { mode: "composer" }
+    > = {
       mode: "composer",
       kind,
       artifactType: source ? promptArtifactType(source) : artifactType,
       artifactId: source?.id ?? artifactId ?? null,
       initialId: initialId ?? null,
-    })) {
+    };
+    if (initialDraft) {
+      panel.initialDraft = initialDraft;
+    }
+    if (!setPromptPaletteArtifactPanel(palette, panel)) {
+      positionPromptPalette(palette);
+      return;
+    }
+    rerender();
+  };
+
+  const openArtifactCreateCanvas = (
+    artifactType: Extract<PromptArtifactType, "prompt" | "context">,
+    initialId?: string | null,
+    initialValues?: ArtifactCreateInitialValues,
+  ) => {
+    if (!setPromptPaletteArtifactPanel(
+      palette,
+      createLauncherArtifactCreatePanel(artifactType, initialId, initialValues),
+    )) {
       positionPromptPalette(palette);
       return;
     }
@@ -295,6 +322,7 @@ export function createArtifactPanelController(options: {
     openArtifactPanel,
     closeArtifactPanel,
     openArtifactComposer,
+    openArtifactCreateCanvas,
     openArtifactDelete,
     runArtifactAction,
   };

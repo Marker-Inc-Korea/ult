@@ -27,6 +27,7 @@ import { createRecoveryPanelController } from "../../src/overlay/launcher/recove
 import { runLauncherCommand } from "../../src/overlay/launcher/searchController";
 import { prepareScratchInput } from "../../src/overlay/launcher/scratchController";
 import { createWorkflowInputController } from "../../src/overlay/launcher/workflowInputController";
+import { WORKFLOW_BUILDER_CONTRACT } from "../../src/overlay/launcher/workflowBuilderContract";
 import {
   PROMPTS_PER_PAGE,
   acceptPromptPaletteScratchRefinement,
@@ -761,6 +762,49 @@ describe("palette runtime launcher command flow behavior", () => {
     }
   });
 
+  test("New Skill opens a source scaffold instead of Advanced Editor or delivery", () => {
+    const cases = [
+      ["new skill", "add-skill", null],
+      ["$diagnose", "create-skill", "diagnose"],
+    ] as const;
+
+    for (const [query, commandId, initialId] of cases) {
+      const surface = fakeElement();
+      const palette = runtime(0);
+      let renderCount = 0;
+      let prepared = false;
+      let composerOpened = false;
+      const command = commandById(launcherCommandsForSearch({
+        ...palette,
+        searchQuery: query,
+      }, false), commandId);
+
+      runLauncherCommand(
+        surface,
+        palette,
+        command,
+        () => {
+          renderCount += 1;
+        },
+        () => {
+          prepared = true;
+        },
+        () => {
+          composerOpened = true;
+        },
+      );
+
+      expect(palette.launcherArtifactPanel).toEqual({
+        mode: "skill-scaffold",
+        initialId,
+      });
+      expect(prepared).toBe(false);
+      expect(composerOpened).toBe(false);
+      expect(renderCount).toBe(1);
+      expect(palette.launcherFeedback).toBeNull();
+    }
+  });
+
   test("Library browse commands open Launcher Library mode with explicit filters", () => {
     const cases = [
       ["library", "browse-library", "all"],
@@ -1002,6 +1046,10 @@ describe("palette runtime launcher command flow behavior", () => {
   });
 
   test("workflow input saves pasted text as local context only on continue", async () => {
+    expect(WORKFLOW_BUILDER_CONTRACT.savedInputStorage).toBe("ephemeral-context-on-continue");
+    expect(WORKFLOW_BUILDER_CONTRACT.copiedPrivateBodiesToHistoryOrSearch).toBe(false);
+    expect(WORKFLOW_BUILDER_CONTRACT.implicitPromptDelivery).toBe(false);
+
     const palette = runtime(0);
     palette.surfaceMode = "search";
     palette.launcherMode = "search";
@@ -1106,6 +1154,59 @@ describe("palette runtime launcher command flow behavior", () => {
     } finally {
       native.saveWorkflowInputContext = originalSave;
       native.exportAppDiagnostics = originalExportDiagnostics;
+    }
+  });
+
+  test("workflow input can prepare explicit context handles without saving empty text", async () => {
+    const palette = runtime(0);
+    palette.prompts = [
+      context(1),
+      {
+        ...prompt(7),
+        id: "workflow-fix-failing-tests",
+        title: "Fix Failing Tests",
+        description: "Editable local workflow prompt.",
+        prompt: "LOCAL editable workflow prompt.",
+      },
+    ];
+    const originalSave = native.saveWorkflowInputContext;
+    const prepared: Array<{ prompt: PromptDefinition; contextIds: string[] }> = [];
+    let saveAttempts = 0;
+    let renderCount = 0;
+    const controller = createWorkflowInputController({
+      palette,
+      rerender: () => {
+        renderCount += 1;
+      },
+      applyLibraryResult: () => {
+        throw new Error("empty workflow input should not write a context");
+      },
+      preparePrompt: (workflowPrompt, contextIds) => {
+        prepared.push({ prompt: workflowPrompt, contextIds });
+      },
+    });
+
+    native.saveWorkflowInputContext = async () => {
+      saveAttempts += 1;
+      throw new Error("empty workflow input should not be saved");
+    };
+
+    try {
+      await controller.submitWorkflowInput(
+        "workflow-fix-failing-tests",
+        "   ",
+        "@context-1",
+      );
+
+      expect(saveAttempts).toBe(0);
+      expect(prepared).toEqual([{
+        prompt: palette.prompts[1],
+        contextIds: ["context-1"],
+      }]);
+      expect(palette.launcherArtifactPanel).toBeNull();
+      expect(renderCount).toBe(0);
+    } finally {
+      native.saveWorkflowInputContext = originalSave;
     }
   });
 

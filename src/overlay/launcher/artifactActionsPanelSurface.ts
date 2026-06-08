@@ -2,12 +2,11 @@ import { createElement } from "../../dom";
 import type { PromptPaletteRuntime } from "../../paletteRuntime";
 import {
   artifactHandle,
-  artifactTypeLabels,
   isDeliverableArtifact,
   promptArtifactType,
   promptScope,
 } from "../../promptUtils";
-import type { PromptDefinition } from "../../types";
+import type { PromptArtifactType, PromptDefinition } from "../../types";
 import type {
   LauncherArtifactActionId,
   PaletteRenderActions,
@@ -132,8 +131,8 @@ function artifactActions(artifact: PromptDefinition): ArtifactAction[] {
   if (editable) {
     rows.push({
       id: "edit",
-      label: `Edit ${artifactTypeLabels[promptArtifactType(artifact)]}`,
-      detail: "Open the Launcher composer for this package.",
+      label: "Advanced Editor",
+      detail: advancedEditorDetail(artifactType),
     });
   }
   rows.push({
@@ -178,6 +177,16 @@ function artifactActions(artifact: PromptDefinition): ArtifactAction[] {
     detail: "Open the backing package file in Finder.",
   });
   return rows;
+}
+
+function advancedEditorDetail(artifactType: PromptArtifactType) {
+  if (artifactType === "prompt") {
+    return "Edit handle, description, arguments, contexts, and delivery defaults.";
+  }
+  if (artifactType === "context") {
+    return "Edit handle, description, and raw context body.";
+  }
+  return "Edit handle, description, and SKILL.md source.";
 }
 
 function artifactActionButton(

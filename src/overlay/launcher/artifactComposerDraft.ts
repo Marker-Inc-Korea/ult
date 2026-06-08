@@ -9,10 +9,22 @@ export function composerInitialDraft(
   options: {
     kind: ArtifactComposerKind;
     initialId?: string | null;
+    initialDraft?: PromptDefinition | null;
   },
   sourceArtifact: PromptDefinition | null,
   artifactType: PromptArtifactType,
 ): PromptDefinition {
+  if (!sourceArtifact && options.kind === "new" && options.initialDraft) {
+    return {
+      ...options.initialDraft,
+      id: uniqueArtifactId(options.initialDraft.id, prompts, null),
+      artifact_type: artifactType,
+      scope: "persistent",
+      prompt: artifactType === "skill"
+        ? skillMarkdownBody(options.initialDraft.prompt)
+        : options.initialDraft.prompt,
+    };
+  }
   if (sourceArtifact && options.kind === "duplicate") {
     return {
       ...sourceArtifact,

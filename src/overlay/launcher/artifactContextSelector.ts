@@ -13,7 +13,7 @@ export function createContextSelector(
     promptArtifactType(prompt) === "context" && prompt.id !== originalId,
   );
   const section = createElement("section", "palette-artifact-composer-card");
-  section.append(createElement("h2", undefined, "Contexts"));
+  section.append(createElement("h2", undefined, "Context Dependencies"));
   const controls: HTMLInputElement[] = [];
   if (contexts.length === 0) {
     section.append(createElement("p", undefined, "No contexts available."));

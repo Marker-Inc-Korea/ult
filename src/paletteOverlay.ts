@@ -212,6 +212,7 @@ function createPaletteActions(
       projectWrite.openProjectArtifactWrite,
       projectWrite.openProjectSetup,
       githubImport.openStarterPacks,
+      artifactPanels.openArtifactCreateCanvas,
     );
   };
   const copyCommandHandle = (command: LauncherCommand) => {
@@ -324,6 +325,16 @@ function createPaletteActions(
       if (!restorePromptPaletteScratchRefinementSource(palette)) return;
       rerender();
     },
+    promoteScratchToCreate: () => {
+      const body = palette.scratchText.trim();
+      if (!body) {
+        palette.scratchNotice = "Type a prompt first";
+        rerender();
+        return;
+      }
+      setPromptPaletteOverlayMode(surface, palette, "launcher", "search");
+      artifactPanels.openArtifactCreateCanvas("prompt", null, { body });
+    },
     submitScratch: () => {
       void prepareScratchInput(surface, palette, rerender, trackLoadedPointer);
     },
@@ -381,6 +392,7 @@ function createPaletteActions(
       artifactPanels.openArtifactPanel("actions", artifactId);
     },
     openArtifactComposer: artifactPanels.openArtifactComposer,
+    openArtifactCreateCanvas: artifactPanels.openArtifactCreateCanvas,
     openArtifactDelete: artifactPanels.openArtifactDelete,
     openProjectArtifactWrite: projectWrite.openProjectArtifactWrite,
     openProjectSetup: projectWrite.openProjectSetup,
@@ -388,6 +400,9 @@ function createPaletteActions(
     runArtifactAction: artifactPanels.runArtifactAction,
     runRecoveryAction: recoveryPanel.runRecoveryAction,
     saveArtifactDraft: libraryMutations.saveArtifactDraft,
+    prepareCreatedArtifact: (artifact: PromptDefinition) => {
+      preparePrompt(artifact, []);
+    },
     deleteArtifact: libraryMutations.deleteArtifact,
     openStarterPacks: githubImport.openStarterPacks,
     openGitHubImport: githubImport.openGitHubImport,

@@ -69,6 +69,12 @@ export function renderScratchPrompt(
       actions.refineScratch();
       return;
     }
+    if (isCommandOnly(event) && event.key.toLowerCase() === "s") {
+      event.preventDefault();
+      actions.updateScratchText(textarea.value);
+      actions.promoteScratchToCreate();
+      return;
+    }
     if (event.key !== "Enter") return;
     if (isCommandOnly(event)) {
       event.preventDefault();
@@ -88,8 +94,22 @@ export function renderScratchPrompt(
   renderScratchRefineError(palette, body);
   form.append(body);
   const footer = createElement("div", "palette-scratch-footer");
+  const createPrompt = createElement(
+    "button",
+    "palette-artifact-secondary-action palette-scratch-create-action",
+    "Create Prompt",
+  ) as HTMLButtonElement;
+  createPrompt.type = "button";
+  createPrompt.disabled = palette.scratchRefining || palette.deliveryInFlight;
+  createPrompt.title = "Open this scratch text in the create canvas.";
+  createPrompt.addEventListener("click", (event) => {
+    event.preventDefault();
+    actions.updateScratchText(textarea.value);
+    actions.promoteScratchToCreate();
+  });
   footer.append(
     createElement("div", "palette-scratch-notice", scratchNoticeText(palette)),
+    createPrompt,
   );
   form.append(footer);
 
@@ -116,7 +136,7 @@ function scratchNoticeText(palette: PromptPaletteRuntime) {
   if (palette.scratchRefineResultText) {
     return "Enter load · ⌘K use · ⌘Z undo · Esc";
   }
-  return "Enter load · ⌘R refine · ⌘↵ newline · Esc";
+  return "Enter load · ⌘S create · ⌘R refine · ⌘↵ newline · Esc";
 }
 
 function renderScratchRefineError(

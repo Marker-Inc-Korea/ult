@@ -12,6 +12,9 @@ import {
   commandPrimaryAction,
   commandSectionLabel,
 } from "../../src/overlay/launcher/searchCommandPresentation";
+import { COMMAND_CREATION_CONTRACT } from "../../src/overlay/launcher/commandCreationContract";
+import { WORKFLOW_BUILDER_CONTRACT } from "../../src/overlay/launcher/workflowBuilderContract";
+import { SKILL_SCAFFOLD_CONTRACT } from "../../src/overlay/launcher/skillScaffoldContract";
 import { runLauncherCommand } from "../../src/overlay/launcher/searchController";
 import type { PromptDefinition, UserLauncherCommandDefinition } from "../../src/types";
 import {
@@ -66,16 +69,33 @@ describe("Launcher product contract", () => {
     expect(readme).toContain("| `/` | Launcher command |");
     expect(normalizedReadme).toContain("Search matches handles, titles, command aliases");
     expect(normalizedReadme).toContain("does not full-text search prompt bodies");
+    expect(normalizedReadme).toContain("Opening a prompt, context, or skill reader shows a document view");
+    expect(normalizedReadme).toContain("artifact body rendered as Markdown");
+    expect(normalizedReadme).toContain("`Create` saves to the Personal Library only");
+    expect(normalizedReadme).toContain("`Create and Load` is a separate explicit action");
+    expect(normalizedReadme).toContain("prepares the saved artifact in loaded state without delivering it");
+    expect(normalizedReadme).toContain("state labels until Ult has a real selectable contract");
     expect(normalizedReadme).toContain("Project Setup all require a target directory");
     expect(normalizedReadme).toContain("Pressing `Enter` does not deliver from loaded state");
 
     if (spec && design) {
+      const normalizedDesign = design.replace(/\s+/g, " ");
       expect(spec).toContain("Search and Scratch MUST remain Launcher modes");
       expect(spec).toContain("one stable LauncherFrame");
       expect(normalizedSpec).toContain("MUST NOT read terminal output, shell history, source files");
+      expect(normalizedSpec).toContain("Create MUST save only the local Personal Library artifact");
+      expect(normalizedSpec).toContain("Create and Load MAY exist only as a separate explicit action");
+      expect(normalizedSpec).toContain("MUST NOT paste, type, send, target a terminal");
+      expect(normalizedSpec).toContain("MUST NOT present as menus or buttons unless there is more than one explicit selectable option");
+      expect(normalizedSpec).toContain("artifact readers for prompts, contexts, and skills SHOULD present a document-style detail view");
+      expect(normalizedSpec).toContain("body rendered as Markdown");
       expect(spec).toContain("User-defined Launcher command rows");
       expect(design).toContain("LauncherFrame contract");
       expect(design).toContain("User-defined Launcher commands");
+      expect(design).toContain("`Create` is the primary action and saves only");
+      expect(normalizedDesign).toContain("`Create and Load` may appear as a secondary explicit action");
+      expect(normalizedDesign).toContain("static state chips for single-option values");
+      expect(normalizedDesign).toContain("Reader detail views for prompts, contexts, and skills should read as documents");
     }
   });
 
@@ -182,13 +202,47 @@ describe("Launcher product contract", () => {
     expect(readme).toContain("commands/<handle>/COMMAND.md");
     expect(readme).toContain("[variables]");
     expect(normalizedReadme).toContain("bind local prompts and contexts into reusable Launcher commands");
+    expect(normalizedReadme).toContain("A command is executable Launcher behavior");
+    expect(normalizedReadme).toContain("`prepare` action loads the referenced prompt into loaded state");
     if (spec && design) {
       expect(spec).toContain("User-Defined Launcher Command");
       expect(spec).toContain("~/.ult/personal-library/persistent/commands/<handle>/COMMAND.md");
       expect(spec).toContain("MUST NOT index that body");
+      expect(spec).toContain("Command creation UI MUST ask for action, input, and result");
       expect(design).toContain("Persistent Launcher commands");
       expect(design).toContain("referenced local prompt with its default");
+      expect(design).toContain("Command creation is not a free-form prompt editor");
     }
+
+    expect(COMMAND_CREATION_CONTRACT).toMatchObject({
+      packagePathPattern: "persistent/commands/<handle>/COMMAND.md",
+      visibleHandlePrefix: "/",
+      actionTypes: ["prepare"],
+      defaultAction: "prepare",
+      resultSurfaceByAction: {
+        prepare: "loaded-state",
+      },
+      markdownBodyRole: "local-notes-only",
+      bodyIndexed: false,
+      promptDeliveryArtifact: false,
+    });
+    expect(COMMAND_CREATION_CONTRACT.requiredFields).toEqual([
+      "id",
+      "title",
+      "prompt_id",
+    ]);
+    expect(COMMAND_CREATION_CONTRACT.indexedMetadataFields).toEqual(
+      expect.arrayContaining([
+        "id",
+        "title",
+        "description",
+        "prompt_id",
+        "contexts",
+        "keywords",
+        "aliases",
+        "source_path",
+      ]),
+    );
 
     const home = commandsForQuery("", [], [command]);
     expect(home.map((entry) => entry.id)).toContain("user-command");
@@ -210,6 +264,145 @@ describe("Launcher product contract", () => {
     expect(generatedDescription.description).toBe("Run #prompt-1.");
     expect(generatedDescription.keywords).toContain("prompt-1");
     expect(generatedDescription.keywords).not.toContain("#prompt-1");
+
+    const sourcePathMatch = commandById(
+      commandsForQuery("persistent/commands/review-repo", [], [command]),
+      "user-command",
+    );
+    expect(sourcePathMatch.userCommand?.source_path).toContain(
+      "persistent/commands/review-repo/COMMAND.md",
+    );
+
+    const missingSlashCommand = commandsForQuery("/missing-command").map((entry) => entry.id);
+    expect(missingSlashCommand).toContain("browse-commands");
+    expect(missingSlashCommand).not.toContain("create-prompt");
+    expect(missingSlashCommand).not.toContain("create-context");
+    expect(missingSlashCommand).not.toContain("create-skill");
+  });
+
+  test("locks workflow builder semantics to prompt-command package pairs", () => {
+    const readme = readText("README.md");
+    const spec = readOptionalText("SPEC.md");
+    const design = readOptionalText("DESIGN.md");
+    const normalizedReadme = readme.replace(/\s+/g, " ");
+
+    expect(normalizedReadme).toContain("Workflows are prompt-command pairs");
+    if (spec && design) {
+      const normalizedDesign = design.replace(/\s+/g, " ");
+      expect(spec).toContain("Workflow builder UI MUST create prompt-command pairs");
+      expect(spec).toContain("A workflow is not a fourth artifact type");
+      expect(normalizedDesign).toContain("Workflow builder surfaces should create prompt-command pairs");
+      expect(normalizedDesign).toContain("not invent a separate workflow artifact");
+    }
+
+    expect(WORKFLOW_BUILDER_CONTRACT).toMatchObject({
+      model: "prompt-command-pair",
+      promptPackagePathPattern: "persistent/prompts/<workflow-id>/PROMPT.md",
+      commandPackagePathPattern: "persistent/commands/<handle>/COMMAND.md",
+      visiblePromptHandlePrefix: "#",
+      visibleCommandHandlePrefix: "/",
+      separateArtifactType: false,
+      commandAction: "prepare",
+      savedInputStorage: "ephemeral-context-on-continue",
+      referencePrivacy: "ids-and-handles-only",
+      copiedPrivateBodiesToHistoryOrSearch: false,
+      terminalReads: false,
+      projectScans: false,
+      implicitPromptDelivery: false,
+      clipboardReads: "explicit-command-only",
+      markdownBodyRole: "local-notes-only",
+    });
+    expect(WORKFLOW_BUILDER_CONTRACT.resultSurfaces).toEqual([
+      "workflow-input-panel",
+      "loaded-state",
+    ]);
+    expect(WORKFLOW_BUILDER_CONTRACT.inputSources).toEqual([
+      "pasted-text",
+      "manual-text",
+      "explicit-context-handles",
+    ]);
+    expect(WORKFLOW_BUILDER_CONTRACT.referenceFields).toEqual([
+      "prompt_id",
+      "contexts",
+      "skills",
+    ]);
+
+    expect(workflowPacks.every((pack) => pack.id.startsWith("workflow-"))).toBe(true);
+    const workflowPrompt = {
+      ...promptArtifact(1),
+      id: "workflow-fix-failing-tests",
+      title: "Fix Failing Tests",
+      description: "Editable local workflow prompt.",
+      prompt: "LOCAL editable workflow prompt.",
+    };
+    const workflowCommand: UserLauncherCommandDefinition = {
+      id: "workflow-fix-failing-tests",
+      title: "Fix Failing Tests",
+      description: "Editable local workflow command.",
+      prompt_id: "workflow-fix-failing-tests",
+      contexts: ["repo-policy"],
+      variable_values: {},
+      keywords: ["workflow", "debugging"],
+      aliases: ["fix tests"],
+      actions: ["prepare"],
+      home: false,
+      source_path: "/Users/taeha/.ult/personal-library/persistent/commands/workflow-fix-failing-tests/COMMAND.md",
+    };
+    const row = commandById(
+      commandsForQuery("editable workflow pack", [workflowPrompt], [workflowCommand]),
+      "user-command",
+    );
+    expect(row.category).toBe("Workflow");
+    expect(row.userCommand?.prompt_id).toBe(workflowPrompt.id);
+    expect(row.userCommand?.actions).toEqual(["prepare"]);
+    expect(row.privacyLabel).toContain("reads no terminal");
+  });
+
+  test("locks skill creation to a source-oriented scaffold and import gate", () => {
+    const readme = readText("README.md");
+    const spec = readOptionalText("SPEC.md");
+    const design = readOptionalText("DESIGN.md");
+    const normalizedReadme = readme.replace(/\s+/g, " ");
+
+    expect(normalizedReadme).toContain("New Skill opens a source-oriented scaffold");
+    if (spec && design) {
+      const normalizedSpec = spec.replace(/\s+/g, " ");
+      const normalizedDesign = design.replace(/\s+/g, " ");
+      expect(spec).toContain("Skill scaffold UI MUST be source-oriented");
+      expect(normalizedSpec).toContain("New Skill MUST NOT open the Prompt/Context create canvas");
+      expect(normalizedDesign).toContain("Skill scaffold surfaces should ask for name, description, SKILL.md body");
+    }
+
+    expect(SKILL_SCAFFOLD_CONTRACT).toMatchObject({
+      packagePathPattern: "persistent/skills/<handle>/SKILL.md",
+      visibleHandlePrefix: "$",
+      sourceFile: "SKILL.md",
+      lifecycle: "persistent-only",
+      sourceOriented: true,
+      deliverablePromptArtifact: false,
+      promptContextCreateCanvas: false,
+      projectInstallSurface: "project-setup-or-install-preview",
+      templatesAreLocalOnly: true,
+      readsProjectFiles: false,
+      readsTerminalOutput: false,
+      readsAgentOutput: false,
+      writesProjectFiles: false,
+      installsExternalPackages: false,
+    });
+    expect(SKILL_SCAFFOLD_CONTRACT.requiredFields).toEqual([
+      "name",
+      "description",
+      "skill_md_body",
+      "destination",
+    ]);
+    expect(SKILL_SCAFFOLD_CONTRACT.optionalFields).toEqual([
+      "import_source",
+    ]);
+    expect(SKILL_SCAFFOLD_CONTRACT.resultSurfaces).toEqual([
+      "skill-scaffold-panel",
+      "advanced-editor-draft",
+      "github-import-preview",
+    ]);
   });
 
   test("exposes useful command metadata and aliases for Launcher home", () => {
@@ -230,18 +423,18 @@ describe("Launcher product contract", () => {
       "browse-library",
       "scratch",
       "add-prompt",
+      "add-context",
       "workflow-review-current-change",
       "project-setup",
       "preferences",
     ]);
-    expect(homeIds.length).toBeLessThanOrEqual(7);
+    expect(homeIds.length).toBeLessThanOrEqual(8);
     expect(homeIds).not.toEqual(expect.arrayContaining([
       "browse-prompts",
       "browse-contexts",
       "browse-skills",
       "browse-commands",
       "capture-clipboard",
-      "add-context",
       "add-skill",
       "workflow-fix-failing-tests",
       "workflow-plan-next-step",
@@ -252,6 +445,18 @@ describe("Launcher product contract", () => {
       "browse-packs",
       "open-library",
     ]));
+
+    const homeCreateDefinitions = [
+      commandById(commandsForQuery("scratch"), "scratch"),
+      commandById(commandsForQuery("new prompt"), "add-prompt"),
+      commandById(commandsForQuery("new context"), "add-context"),
+    ];
+    for (const definition of homeCreateDefinitions) {
+      expect(definition.homePlacement).toBe("home");
+      expect(homeIds).toContain(definition.id);
+    }
+    expect(commandById(commandsForQuery("new skill"), "add-skill").homePlacement)
+      .toBe("search");
 
     const browseLibrary = commandById(commandsForQuery("library"), "browse-library");
     expect(browseLibrary.category).toBe("Library");
@@ -558,12 +763,17 @@ describe("Launcher product contract", () => {
   });
 
   test("keeps artifact CRUD reachable from Launcher instead of Preferences", () => {
-    const created: Array<{
+    const createCanvases: Array<{
+      artifactType: string;
+      initialId?: string | null;
+    }> = [];
+    const advancedComposers: Array<{
       kind: string;
       artifactType: string;
       artifactId?: string | null;
       initialId?: string | null;
     }> = [];
+    const skillScaffolds: Array<string | null> = [];
     const palette = runtime(0);
     const rerender = () => undefined;
     const preparePrompt = () => undefined;
@@ -573,12 +783,19 @@ describe("Launcher product contract", () => {
       artifactId?: string | null,
       initialId?: string | null,
     ) => {
-      created.push({ kind, artifactType, artifactId, initialId });
+      advancedComposers.push({ kind, artifactType, artifactId, initialId });
+    };
+    const openArtifactCreateCanvas = (
+      artifactType: "prompt" | "context",
+      initialId?: string | null,
+    ) => {
+      createCanvases.push({ artifactType, initialId });
     };
 
     for (const [query, commandId] of [
       ["#review", "create-prompt"],
       ["@repo-policy", "create-context"],
+      ["new context", "add-context"],
       ["$diagnose", "create-skill"],
       ["new skill", "add-skill"],
     ] as const) {
@@ -590,15 +807,24 @@ describe("Launcher product contract", () => {
         rerender,
         preparePrompt,
         openArtifactComposer,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        openArtifactCreateCanvas,
       );
+      if (palette.launcherArtifactPanel?.mode === "skill-scaffold") {
+        skillScaffolds.push(palette.launcherArtifactPanel.initialId ?? null);
+      }
     }
 
-    expect(created).toEqual([
-      { kind: "new", artifactType: "prompt", artifactId: null, initialId: "review" },
-      { kind: "new", artifactType: "context", artifactId: null, initialId: "repo-policy" },
-      { kind: "new", artifactType: "skill", artifactId: null, initialId: "diagnose" },
-      { kind: "new", artifactType: "skill", artifactId: null, initialId: null },
+    expect(createCanvases).toEqual([
+      { artifactType: "prompt", initialId: "review" },
+      { artifactType: "context", initialId: "repo-policy" },
+      { artifactType: "context", initialId: null },
     ]);
+    expect(advancedComposers).toEqual([]);
+    expect(skillScaffolds).toEqual(["diagnose", null]);
   });
 
   test("keeps GitHub import reachable from Launcher instead of Preferences", () => {

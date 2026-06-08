@@ -46,6 +46,10 @@ type VisualSurface =
   | "launcher-long-command-search"
   | "launcher-reader"
   | "launcher-actions"
+  | "launcher-create-canvas"
+  | "launcher-create-context"
+  | "launcher-create-long"
+  | "launcher-create-template-picker"
   | "launcher-composer"
   | "launcher-starter-packs"
   | "launcher-github-import"
@@ -318,6 +322,25 @@ function createPaletteVisualSurface(visualSurface: VisualSurface) {
     setPromptPaletteOverlayMode(surfaceElement, palette, "launcher", "search");
     setPromptPaletteActiveState(surfaceElement, palette, true);
     palette.launcherArtifactPanel = { mode: "actions", artifactId: "review-change" };
+  } else if (
+    visualSurface === "launcher-create-canvas"
+    || visualSurface === "launcher-create-context"
+    || visualSurface === "launcher-create-long"
+    || visualSurface === "launcher-create-template-picker"
+  ) {
+    setPromptPaletteOverlayMode(surfaceElement, palette, "launcher", "search");
+    setPromptPaletteActiveState(surfaceElement, palette, true);
+    palette.launcherArtifactPanel = {
+      mode: "create",
+      artifactType: visualSurface === "launcher-create-context" ? "context" : "prompt",
+      initialId: null,
+      initialTitle: visualSurface === "launcher-create-long"
+        ? "긴 한국어 제목과 Long English Create Canvas Title For Overflow"
+        : null,
+      initialBody: visualSurface === "launcher-create-long"
+        ? "Review the launch plan with a narrow, concrete recommendation. Include Korean and English edge cases without adding persistent agent context."
+        : null,
+    };
   } else if (visualSurface === "launcher-composer") {
     setPromptPaletteOverlayMode(surfaceElement, palette, "launcher", "search");
     setPromptPaletteActiveState(surfaceElement, palette, true);
@@ -586,6 +609,11 @@ function createPaletteVisualSurface(visualSurface: VisualSurface) {
   }
 
   renderPromptPalette(palette, actions);
+  if (visualSurface === "launcher-create-template-picker") {
+    const useTemplate = [...palette.container.querySelectorAll("button")]
+      .find((button) => button.textContent?.trim() === "Use template");
+    useTemplate?.click();
+  }
   positionPromptPalette(palette);
   surfaceElement.append(palette.container, palette.badge);
   return surfaceElement;
@@ -621,7 +649,27 @@ function visualActions(
     copyLauncherCommandHandle: () => undefined,
     openArtifactReader: () => undefined,
     openArtifactActions: () => undefined,
-    openArtifactComposer: () => undefined,
+    openArtifactComposer: (kind, artifactType, artifactId, initialId, initialDraft) => {
+      palette.launcherArtifactPanel = {
+        mode: "composer",
+        kind,
+        artifactType,
+        artifactId: artifactId ?? null,
+        initialId: initialId ?? null,
+        initialDraft: initialDraft ?? null,
+      };
+      rerender();
+    },
+    openArtifactCreateCanvas: (artifactType, initialId, initialValues) => {
+      palette.launcherArtifactPanel = {
+        mode: "create",
+        artifactType,
+        initialId: initialId ?? null,
+        initialTitle: initialValues?.title ?? null,
+        initialBody: initialValues?.body ?? null,
+      };
+      rerender();
+    },
     openArtifactDelete: () => undefined,
     openProjectArtifactWrite: () => undefined,
     openProjectSetup: () => undefined,
@@ -629,6 +677,7 @@ function visualActions(
     runArtifactAction: () => undefined,
     runRecoveryAction: () => undefined,
     saveArtifactDraft: async () => undefined,
+    prepareCreatedArtifact: () => undefined,
     deleteArtifact: async () => undefined,
     openStarterPacks: () => undefined,
     openGitHubImport: () => undefined,
@@ -685,6 +734,18 @@ function visualActions(
     refineScratch: () => undefined,
     acceptScratchRefinement: () => undefined,
     restoreScratchOriginal: () => undefined,
+    promoteScratchToCreate: () => {
+      const body = palette.scratchText.trim();
+      if (!body) return;
+      setPromptPaletteOverlayMode(surfaceElement, palette, "launcher", "search");
+      palette.launcherArtifactPanel = {
+        mode: "create",
+        artifactType: "prompt",
+        initialId: null,
+        initialBody: body,
+      };
+      rerender();
+    },
     submitScratch: () => undefined,
     cancelScratch: () => undefined,
     applyLoaded: () => undefined,
@@ -790,12 +851,30 @@ function visualArtifacts(): PromptDefinition[] {
   const now = Date.now();
   return [
     prompt("scope-lock", "Scope Lock", "Constrain the agent to the requested scope before it makes broad edits.", true),
-    prompt(
-      "review-change",
-      "Review Change",
-      "Inspect the current diff for regressions, missing tests, risky assumptions, and user-facing behavior changes.",
-      true,
-    ),
+    {
+      ...prompt(
+        "review-change",
+        "Review Change",
+        "Inspect the current diff for regressions, missing tests, risky assumptions, and user-facing behavior changes.",
+        true,
+      ),
+      prompt: [
+        "# Review Current Change",
+        "",
+        "Inspect the current diff for **regressions**, missing tests, risky assumptions, and user-facing behavior changes.",
+        "",
+        "## Checklist",
+        "",
+        "- Prefer the smallest viable patch.",
+        "- Run `make check` or explain why it was skipped.",
+        "- Report risks plainly.",
+        "",
+        "| Area | Expectation |",
+        "| --- | --- |",
+        "| Behavior | No unintended delivery or privacy change |",
+        "| Tests | Focused verification is recorded |",
+      ].join("\n"),
+    },
     prompt("qa", "QA", "Run focused verification and report the exact command output.", true),
     {
       ...prompt(

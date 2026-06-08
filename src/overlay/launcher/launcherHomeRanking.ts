@@ -90,6 +90,7 @@ function createHomeCommands() {
   return requiredManagementCommands([
     "scratch",
     "add-prompt",
+    "add-context",
   ]);
 }
 

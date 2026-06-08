@@ -10,7 +10,7 @@ APP_PATH="${1:-src-tauri/target/release/bundle/macos/${PRODUCT_NAME}.app}"
 SETTINGS_PATH="${ULT_SETTINGS_PATH:-$HOME/Library/Application Support/${BUNDLE_ID}/settings.toml}"
 MANUAL_CHECKS_PATH="${ULT_MANUAL_CHECKS_PATH:-docs/MANUAL_CHECKS.md}"
 DEFAULT_OPEN_SHORTCUT="Cmd+U"
-DEFAULT_SEARCH_SHORTCUT="Cmd+Option+Space"
+DEFAULT_SEARCH_SHORTCUT="Option+Space"
 DEFAULT_SCRATCH_SHORTCUT="Cmd+Option+Control+S"
 
 read_toml_string() {

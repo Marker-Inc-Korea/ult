@@ -8,6 +8,7 @@ import {
   artifactMatchesSearch,
   artifactScore,
 } from "./launcherSearchArtifactScoring";
+import { COMMAND_CREATION_CONTRACT } from "./commandCreationContract";
 import {
   composeScratchCommand,
   createArtifactCommand,
@@ -123,6 +124,9 @@ function commandMatchesSearch(
 
 function searchableCommandText(item: LauncherIndexedCommandItem) {
   const command = item.command;
+  const sourcePath = COMMAND_CREATION_CONTRACT.indexedMetadataFields.includes("source_path")
+    ? command.userCommand?.source_path ?? ""
+    : "";
   return [
     command.id,
     item.handle,
@@ -130,6 +134,7 @@ function searchableCommandText(item: LauncherIndexedCommandItem) {
     command.description,
     command.category ?? "",
     command.privacyLabel ?? "",
+    sourcePath,
     ...item.keywords,
     ...item.aliases,
   ].join(" ").toLowerCase();

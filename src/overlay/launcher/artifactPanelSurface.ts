@@ -2,6 +2,7 @@ import type { PromptPaletteRuntime } from "../../paletteRuntime";
 import type { PromptDefinition } from "../../types";
 import type { PaletteRenderActions } from "../shared/renderTypes";
 import { renderArtifactActionsPanel } from "./artifactActionsPanelSurface";
+import { renderArtifactCreateCanvasPanel } from "./artifactCreateCanvasSurface";
 import { renderArtifactComposerPanel } from "./artifactComposerPanelSurface";
 import { renderArtifactDeletePanel } from "./artifactDeletePanelSurface";
 import { renderArtifactReaderPanel } from "./artifactReaderPanelSurface";
@@ -10,6 +11,7 @@ import { renderProjectSetupPanel } from "./projectSetupPanelSurface";
 import { renderProjectWritePanel } from "./projectWritePanelSurface";
 import { renderRecoveryPanel } from "./recoveryPanelSurface";
 import { renderSkillDiscoveryPanel } from "./skillDiscoveryPanelSurface";
+import { renderSkillScaffoldPanel } from "./skillScaffoldPanelSurface";
 import { renderStarterPacksPanel } from "./starterPacksPanelSurface";
 import { renderWorkflowInputPanel } from "./workflowInputPanelSurface";
 
@@ -30,6 +32,10 @@ export function renderArtifactPanel(
     renderSkillDiscoveryPanel(palette, actions, panel);
     return;
   }
+  if (panel?.mode === "skill-scaffold") {
+    renderSkillScaffoldPanel(palette, actions, panel);
+    return;
+  }
   if (panel?.mode === "project-write") {
     renderProjectWritePanel(palette, actions, panel);
     return;
@@ -48,6 +54,10 @@ export function renderArtifactPanel(
   }
   if (panel?.mode === "composer") {
     renderArtifactComposerPanel(palette, actions, panel);
+    return;
+  }
+  if (panel?.mode === "create") {
+    renderArtifactCreateCanvasPanel(palette, actions, panel);
     return;
   }
 

@@ -1,9 +1,11 @@
-import type { PromptPaletteRuntime } from "../../paletteRuntime";
 import { parseTemplateVariables } from "../../templatePrompt";
-import type { PromptArtifactType } from "../../types";
+import type {
+  PromptArtifactType,
+  PromptDefinition,
+} from "../../types";
 
 export function validateComposerDraft(
-  palette: PromptPaletteRuntime,
+  palette: { prompts: PromptDefinition[] },
   originalId: string | null,
   artifactType: PromptArtifactType,
   id: string,

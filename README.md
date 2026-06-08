@@ -2,16 +2,16 @@
 
 [한국어](README.ko.md)
 
-Ult is a local-first macOS menu-bar app for steering agents with explicit,
-reusable local prompts.
+Ult is a local-first macOS menu-bar app for steering terminal-based coding
+agents with explicit, reusable intervention prompts.
 
-It is not an autonomous agent. Ult does not watch agent output, inspect source
-files, or decide what to send. You choose a prompt, context, skill, or command,
-then choose the target app.
+It is not an autonomous agent. Ult does not watch terminal output, inspect
+source files, or decide what to send. You choose a prompt, context, skill, or
+command, then choose the target app.
 
 ## Why
 
-Agents often need short operator interventions:
+Coding agents often need short operator interventions:
 
 - stay inside the requested scope
 - inspect the current diff before editing more
@@ -46,7 +46,7 @@ and Quit. Artifact management lives in Launcher, not Preferences.
 
 ## Core Workflow
 
-1. Start an agent session.
+1. Start a terminal-based coding agent.
 2. Press `Option+Space` to open Launcher, or `Cmd+U` for the quick Palette.
 3. Pick or compose an intervention such as `#review-change @repo-policy`.
 4. Press `Enter` to load it.
@@ -83,8 +83,9 @@ show contexts, skills, scratch prompts, or broad search results.
 ### Launcher
 
 Launcher is the main command surface. It is top-centered and uses one stable
-shell for search, library browsing, scratch composition, variable filling,
-workflow input panels, clipboard stack, artifact readers, and project setup.
+shell for search, creation, library browsing, scratch composition, variable
+filling, workflow input panels, clipboard stack, artifact readers, and project
+setup.
 
 Launcher handles use fixed namespaces:
 
@@ -106,7 +107,74 @@ $diagnose
 
 Search matches handles, titles, command aliases, and command intent metadata.
 It does not full-text search prompt bodies, context bodies, skill sources, or
-agent output.
+terminal output.
+
+Opening a prompt, context, or skill reader shows a document view: a metadata
+card with handle, name, description, kind, lifecycle, and source path, followed
+by the artifact body rendered as Markdown.
+
+### Creating Prompts And Contexts
+
+Run `New Prompt` or `New Context` from Launcher to open the create canvas. The
+default surface is body-first: type a title if useful, write the prompt or
+context body, then create the local artifact.
+
+Ult derives the canonical handle from the title or first body sentence and
+previews it as `#handle` or `@handle`. The bottom bar keeps only the common
+choices visible:
+
+- type
+- Personal Library destination
+- explicit project selection status
+- Show in Palette for prompts
+- Confirm before delivery for prompts
+- Advanced Editor
+
+Type, destination, and project are state labels until Ult has a real selectable
+contract behind them. They should not behave like menus when there is only one
+safe option.
+
+`Use template` fills or appends one of the local built-in prompt templates:
+Code Review, Debug, Implementation Plan, Summary, or Scoped Task. Templates do
+not fetch remote content or inspect project files.
+
+`Create` saves to the Personal Library only. It does not load, paste, send,
+target a terminal, read project files, or write into a project. `Create and
+Load` is a separate explicit action: it saves the local prompt or context, then
+prepares the saved artifact in loaded state without delivering it. Use
+`Advanced Editor` when you need handle overrides, descriptions, context
+dependencies, argument metadata, shortcuts, raw body editing, or other
+power-user fields.
+
+Scratch remains the fast temporary drafting path. `Enter` saves a scratch draft
+as a 7-day ephemeral prompt and loads it for explicit delivery. `Create Prompt`
+or `Cmd+S` promotes the scratch text into the prompt create canvas without
+loading or delivering it.
+
+### Workflows
+
+Workflows are prompt-command pairs, not a separate artifact type. A first-party
+workflow is stored as a local `#workflow-*` prompt plus a `/workflow-*` command
+that prepares that prompt with explicit inputs. Workflow input panels accept
+pasted or user-entered text and explicit `@context` handles only. Pasted text is
+saved as a local 7-day ephemeral context only after `Continue`; it is not copied
+into Launcher search, usage history, diagnostics, or logs by default.
+
+Running a workflow does not read terminal output, scan project files, inspect
+agent responses, or deliver automatically. Delivery still goes through the
+normal loaded state, target click, or explicit Copy action.
+
+### Skills
+
+New Skill opens a source-oriented scaffold for a persistent `SKILL.md` package.
+It asks for skill name, short description, `SKILL.md` body or local template,
+Personal Library destination, and optional import source. Creating a skill does
+not load it as prompt text, paste, send, scan project files, or install it into
+a project.
+
+External skill sources go through the GitHub import preview gate. Installing a
+skill into a project stays behind `Project Setup` or `Install Skill to
+Project...`, with explicit file preview and confirmation.
 
 ### Library
 
@@ -154,7 +222,11 @@ artifacts with 7-day expiry. They use opaque handles and are ignored after
 expiry.
 
 `COMMAND.md` files bind local prompts and contexts into reusable Launcher
-commands. Example:
+commands. A command is executable Launcher behavior, not a prompt artifact. The
+current `prepare` action loads the referenced prompt into loaded state with its
+explicit context handles and variable presets; it does not paste, type, or
+target a terminal. The Markdown body is local notes only and is not full-text
+searched. Example:
 
 ```markdown
 ---
@@ -199,18 +271,17 @@ Meta Prompting is off by default. Configure it in
 `Preferences > Meta Prompting`.
 
 When enabled, `Cmd+R` in Launcher Scratch sends only the current scratch text
-to the configured provider. Ult does not attach agent output, terminal
-contents, shell history, source files, or context bodies. The generated prompt
-is shown for review and is not delivered until you explicitly load it and click
-a target.
+to the configured provider. Ult does not attach terminal contents, shell
+history, source files, context bodies, or agent output. The generated prompt is
+shown for review and is not delivered until you explicitly load it and click a
+target.
 
 ## Privacy Model
 
 Ult is local-first by default.
 
-Ult does not read agent output, terminal contents, shell history, source files,
-editor buffers, window titles, clipboard history, or agent responses by
-default.
+Ult does not read terminal contents, shell history, source files, editor
+buffers, window titles, clipboard history, or agent responses by default.
 
 Default usage history stores only compact metadata:
 
@@ -221,9 +292,8 @@ Default usage history stores only compact metadata:
 - retryable diagnostic code when available
 - target application metadata when available
 
-Prompt text, context text, scratch text, agent output, terminal output, source
-files, and agent responses are not written to usage history or diagnostics by
-default.
+Prompt text, context text, scratch text, terminal output, source files, and
+agent responses are not written to usage history or diagnostics by default.
 
 Project metadata collection is reserved for a future privacy-safe resolver and
 is not exposed as a working Preferences control today.

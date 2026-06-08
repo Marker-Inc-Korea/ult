@@ -3,6 +3,7 @@
 @import "./palette-overlay/search.css";
 @import "./palette-overlay/artifact-panel.css";
 @import "./palette-overlay/artifact-composer.css";
+@import "./palette-overlay/artifact-create-canvas.css";
 @import "./palette-overlay/github-import.css";
 @import "./palette-overlay/project-write.css";
 @import "./palette-overlay/workflow-input.css";

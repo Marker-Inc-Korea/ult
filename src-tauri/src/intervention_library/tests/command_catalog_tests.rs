@@ -117,3 +117,60 @@ prompt = "{prompt_reference}"
         assert!(error.contains(prompt_reference), "{error}");
     }
 }
+
+#[test]
+fn command_package_contract_stores_prepare_inputs_without_markdown_body() {
+    let command = super::load_command_package_from_contents(
+        "review-repo",
+        "persistent/commands/review-repo/COMMAND.md",
+        r#"---
+title = "Review Repo"
+description = "Review the current change."
+prompt = "scope-lock"
+contexts = ["repo-policy"]
+keywords = ["review"]
+aliases = ["rr"]
+home = true
+
+[variables]
+branch = "main"
+---
+
+Local command implementation notes are not part of the command contract.
+"#,
+    )
+    .expect("command package");
+
+    assert_eq!(command.id, "review-repo");
+    assert_eq!(command.title, "Review Repo");
+    assert_eq!(command.prompt_id, "scope-lock");
+    assert_eq!(command.contexts, vec!["repo-policy"]);
+    assert_eq!(
+        command.variable_values.get("branch").map(String::as_str),
+        Some("main")
+    );
+    assert_eq!(command.actions, vec![super::LauncherCommandAction::Prepare]);
+    assert!(command.home);
+
+    let serialized = serde_json::to_string(&command).expect("serialized command");
+    assert!(!serialized.contains("implementation notes"));
+    assert!(!serialized.contains("Markdown"));
+}
+
+#[test]
+fn command_package_rejects_unsupported_action_types() {
+    let error = super::load_command_package_from_contents(
+        "bad-command",
+        "persistent/commands/bad-command/COMMAND.md",
+        r#"---
+title = "Bad Command"
+prompt = "scope-lock"
+actions = ["deliver"]
+---
+"#,
+    )
+    .expect_err("unsupported actions must not deserialize");
+
+    assert!(error.contains("invalid command front matter"), "{error}");
+    assert!(error.contains("deliver"), "{error}");
+}

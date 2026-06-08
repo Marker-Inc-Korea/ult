@@ -91,6 +91,7 @@ describe("palette renderer search home behavior", () => {
       "Browse Library",
       "Scratch",
       "New Prompt",
+      "New Context",
       "Review Current Change",
       "Project Setup",
       "Preferences",
@@ -100,6 +101,7 @@ describe("palette renderer search home behavior", () => {
       "2 prompts / 1 context / 0 skills / 0 cmds",
       "Temporary prompt.",
       "Create a prompt from Launcher.",
+      "Create context from Launcher.",
       "Review a user-provided diff or current agent context.",
       "Choose a starter-pack preset and preview project files.",
       "Settings.",
@@ -131,13 +133,14 @@ describe("palette renderer search home behavior", () => {
       "Browse Library",
       "Scratch",
       "New Prompt",
+      "New Context",
       "Review Current Change",
       "Project Setup",
       "Preferences",
     ]);
     expect(findAllByClass(root, "palette-search-command-text").map(rowDescription)[0])
       .toBe("0 prompts / 0 contexts / 0 skills / 0 cmds");
-    expect(findAllByClass(root, "palette-search-intervention")).toHaveLength(6);
+    expect(findAllByClass(root, "palette-search-intervention")).toHaveLength(7);
   });
 
   test("makes installed skills reachable from home through the Library lane", () => {
@@ -188,12 +191,13 @@ describe("palette renderer search home behavior", () => {
     renderPromptPalette(palette, actions());
 
     const root = palette.container as unknown as FakeElement;
-    expect(findAllByClass(root, "palette-search-command-text").map(rowPrimary).slice(0, 4))
+    expect(findAllByClass(root, "palette-search-command-text").map(rowPrimary).slice(0, 5))
       .toEqual([
         "Browse Library",
         "Review Repo",
         "Scratch",
         "New Prompt",
+        "New Context",
       ]);
     expect(findAllByClass(root, "palette-search-command-text").map(rowDescription).slice(0, 2))
       .toEqual([
